@@ -52,10 +52,12 @@ prismjs:
 # Category & Tag
 default_category: uncategorized
 category_map: # edit for Theme.shoka
-  Java: java
   前端: web
   随笔: essay
+  数据结构: data_structure
+  树: tree
 tag_map:
+  Java: java
 
 # Date / Time format
 ## Hexo uses Moment.js to parse and display date

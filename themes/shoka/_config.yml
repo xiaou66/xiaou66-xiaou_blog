@@ -149,13 +149,13 @@ post:
   count: false
 
 # Reward (Donate)
-reward:
-  # If true, reward will be displayed in every article by default.
-  enable: true
-  account:
-    wechatpay: /wechatpay.png
-    # alipay: /alipay.png
-    # paypal: /paypal.png
+# reward:
+#   # If true, reward will be displayed in every article by default.
+#   enable: true
+#   account:
+#     wechatpay: /wechatpay.png
+#     # alipay: /alipay.png
+#     # paypal: /paypal.png
 
 # TagCloud settings for tags page.
 tagcloud:

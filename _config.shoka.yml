@@ -42,3 +42,12 @@ menu:
     tags: /tags/ || tags
   # friends: /friends/ || heart
   # links: /links/ || magic
+
+# Reward (Donate)
+reward:
+  # If true, reward will be displayed in every article by default.
+  enable: true
+  account:
+    wechatpay: /wechatpay.png
+    alipay: /alipay.png
+    # paypal: /paypal.pngs
