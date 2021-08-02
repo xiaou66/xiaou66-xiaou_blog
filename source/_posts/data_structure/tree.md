@@ -22,6 +22,8 @@ tags:
 - **叶子结点**：没有孩子结点
 - **非叶子结点**：至少有一个孩子结点
 - **树根结点**：每一个非空树都有且只有一个被称为根的结点
+- **前驱结点**：中序遍历时的前一个结点
+- **后继结点**：中序遍历时的后一个结点
 
 ### 树中的度
 
@@ -151,4 +153,119 @@ $$
 6. 如果 2i + 2 > n – 1 ，它无右子节点
 
 ![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627896124778-1627896124773-tree_02.png)
+
+## 二叉树结点类型判断
+
+### 叶子结点
+
+```java
+public boolean isLeaf() {
+    return left == null && right == null;
+}
+```
+
+### 有两个孩子结点
+
+```java
+public boolean hasTwoChildren() {
+    return left != null && right != null;
+}
+```
+
+### 左孩子结点
+
+```java
+public boolean isLeftChild() {
+    return parent != null && parent.left == this;
+}
+```
+
+### 右孩子结点
+
+```java
+public boolean isRightChild() {
+	return parent != null && parent.right == this;
+}
+```
+
+### 兄弟结点
+
+```java
+public Node<E> sibling() {
+    if (isLeftChild()) {
+        return parent.right;
+    }
+    if (isRightChild()) {
+        return parent.left;
+    }
+    return null;
+}
+```
+
+### 前驱结点
+
+:::info
+
+中序遍历时的前一个结点
+
+:::
+
+1. `node.left != null` 代表前驱结点在左子树中最右边的
+
+![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627910049292-1627910049291-tree_06.png)
+
+1. `node.left == null && node.parent != null` 
+   - 到父结点中找直到发现结点是父结点右子树为止
+
+![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627910007276-1627910007275-tree_07.png)
+
+```java
+private Node<E> precursor(Node<E> node) {
+    if (node == null) {
+        return null;
+    }
+    Node<E> p = node.left;
+    // 前驱结点在左子树中(left, right, right, right....)
+    if (node.left != null) {
+        while (p.right != null) {
+            p = p.right;
+        }
+        return p;
+    }
+    // 父结点、祖父结点中寻找前驱结点
+    while (node.parent != null && node == node.parent.left) {
+        node = node.parent;
+    }
+    // node.parent == null
+    // node == node.parent.right
+    return node.parent;
+}
+```
+
+### 后继结点
+
+:::info
+
+中序遍历时的后一个结点
+
+:::
+
+```java
+private Node<E> suffix(Node<E> node) {
+    if (node == null) {
+        return null;
+    }
+    Node<E> p = node.right;
+    if (p != null) {
+        while (p.left != null) {
+            p = p.left;
+        }
+        return p;
+    }
+    while (node.parent != null && node == node.parent.right) {
+        node = node.parent;
+    }
+    return node.parent;
+}
+```
 
