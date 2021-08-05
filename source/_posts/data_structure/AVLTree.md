@@ -1,6 +1,6 @@
 ---
 title: AVL树
-date: 2020/08/03 10:00
+date: 2021/08/03 10:00
 math: true
 categories: 
 - [数据结构, 树]

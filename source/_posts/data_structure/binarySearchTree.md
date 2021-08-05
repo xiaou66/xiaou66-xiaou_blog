@@ -1,6 +1,6 @@
 ---
 title: 二叉搜索树
-date: 2020/08/03 08:00
+date: 2021/08/03 08:00
 math: true
 categories: 
 - [数据结构, 树]
