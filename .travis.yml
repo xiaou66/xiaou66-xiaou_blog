@@ -19,7 +19,7 @@ script:
 
 after_script:
   - mv CNAME ./public
-  - mv baidu_verify_code-6GKUL6kjh5.html ./public
+  - mv ./baidu_verify_code-6GKUL6kjh5.html ./public
   - cd ./public
   - git init
   - git config user.name "xiaou66"
