@@ -61,6 +61,7 @@ category_map: # edit for Theme.shoka
 tag_map:
   Java: java
   kotlin: kotlin
+  SpringBoot: springboot
 
 # Date / Time format
 ## Hexo uses Moment.js to parse and display date
