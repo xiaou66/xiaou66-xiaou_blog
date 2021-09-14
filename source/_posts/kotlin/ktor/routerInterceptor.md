@@ -66,7 +66,6 @@ fun Route.tokenCheck(role: String = "user", build: Route.() -> Unit): Route {
 ```
 
 1. role 参数代表当前请求所需要的权限
-2. 另一个参数是函数类型参数，用来实现DSL语法。这个函数基于Route类的拓展函数，拥有Route的上下文。
-3. 随后我们通过`createChild()`获取一个子Route类。
+2. 另一个参数是函数类型参数，用来实现 DSL 语法。这个函数基于 Route 类的拓展函数，拥有 Route 的上下文。
+3. 随后我们通过`createChild()`获取一个子 Route 类。
 4. 其中`TokenRouteSelector`是一个继承自`RouteSelector`类的自定义类。
-
