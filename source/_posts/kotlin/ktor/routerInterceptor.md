@@ -43,6 +43,8 @@ public fun Route.authenticate(
 
 1. 可以发现官方直接注册一个`Authentication`模式并拦截请求管道实现校验。
 
+## 自行实现
+
 ```kotlin
 class TokenRouteSelector(val role: String) : RouteSelector() {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
