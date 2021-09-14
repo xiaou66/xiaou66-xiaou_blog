@@ -56,8 +56,11 @@ category_map: # edit for Theme.shoka
   随笔: essay
   数据结构: data_structure
   树: tree
+  哈希表: hashTable
+  ktor: ktor
 tag_map:
   Java: java
+  kotlin: kotlin
 
 # Date / Time format
 ## Hexo uses Moment.js to parse and display date
