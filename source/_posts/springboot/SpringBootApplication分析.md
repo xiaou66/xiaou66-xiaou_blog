@@ -1,5 +1,5 @@
 ---
-title: @SpringBootApplication分析
+title: SpringBootApplication分析
 date: 2021/09/11 20:00
 math: true
 categories:
