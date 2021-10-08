@@ -59,6 +59,7 @@ category_map: # edit for Theme.shoka
   哈希表: hashTable
   ktor: ktor
   设计模式: desinMode
+  算法: algorithm
 tag_map:
   Java: java
   kotlin: kotlin
