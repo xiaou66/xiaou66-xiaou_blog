@@ -40,7 +40,7 @@ menu:
     archives: /archives/ || list-alt
     categories: /categories/ || th
     tags: /tags/ || tags
-  # friends: /friends/ || heart
+  friends: /friends/ || heart
   # links: /links/ || magic
 
 # Reward (Donate)
