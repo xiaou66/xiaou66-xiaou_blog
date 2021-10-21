@@ -1,11 +1,14 @@
-anguage: node_js
+os: linux
+language: node_js
 
-node_js: stable
+node_js:
+  - 14
 
 cache:
   directories:
     - node_modules
 before_install:
+  - export TZ='Asia/Shanghai
   - npm install -g hexo-cli
 
 install:
