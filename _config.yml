@@ -60,10 +60,13 @@ category_map: # edit for Theme.shoka
   ktor: ktor
   设计模式: desinMode
   算法: algorithm
+  打包工具: webpack
+  java: java
 tag_map:
   Java: java
   kotlin: kotlin
   SpringBoot: springboot
+  Rollup: rollup
 
 # Date / Time format
 ## Hexo uses Moment.js to parse and display date
