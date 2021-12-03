@@ -52,7 +52,6 @@ prismjs:
 # Category & Tag
 default_category: uncategorized
 category_map: # edit for Theme.shoka
-  前端: web
   随笔: essay
   数据结构: data_structure
   树: tree
@@ -63,6 +62,7 @@ category_map: # edit for Theme.shoka
   打包工具: webpack
   java: java
 tag_map:
+  js: js
   Java: java
   kotlin: kotlin
   SpringBoot: springboot
