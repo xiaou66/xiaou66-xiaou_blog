@@ -61,6 +61,7 @@ category_map: # edit for Theme.shoka
   算法: algorithm
   打包工具: webpack
   java: java
+  javaFrame: java 框架
 tag_map:
   js: js
   Java: java

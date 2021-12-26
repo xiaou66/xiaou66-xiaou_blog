@@ -1,8 +1,17 @@
-# Mybatis
+---
+title: Mybaits
+date: 2021/12/26 15:49:16
+math: true
+categories:
+  - [javaFrame]
+tags:
+  - [java]
+---
+# MyBaits
 
 [官方文档](https://mybatis.org/mybatis-3/zh/getting-started.html)
 
-## Mybatis 架构
+## MyBatis 架构
 
 Mybatis的功能架构分为三层：
 
