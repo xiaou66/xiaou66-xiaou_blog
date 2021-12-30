@@ -1,5 +1,5 @@
 ---
-title: SpringMVC自动配置概览
+title: SpringBoot自动配置概览
 date: 2021/09/11 20:00
 math: true
 categories:
@@ -8,7 +8,7 @@ tags:
   - [java]
 ---
 
-# SpringMVC自动配置详情
+# SpringBoot 自动配置详情
 
 :::info
 
@@ -334,3 +334,163 @@ public class MyRoutes {
 > 默认的欢迎页面处理的 handler
 
 ![image-20211227223533358](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640616295785image-20211227223533358.png)
+
+## 请求参数映射解析
+
+### 普通参数与基本注解
+
+@PathVariable、@RequestHeader、@ModelAttribute、@RequestParam、@MatrixVariable、@CookieValue、@RequestBody
+
+### Servlet API
+
+WebRequest、ServletRequest、MultipartRequest、 HttpSession、javax.servlet.http.PushBuilder、Principal、InputStream、Reader、HttpMethod、Locale、TimeZone、ZoneId
+
+### 复杂参数
+
+**Map**、**Model（map、model里面的数据会被放在request的请求域  request.setAttribute）、**Errors/BindingResult、**RedirectAttributes（ 重定向携带数据）**、**ServletResponse（response）**、SessionStatus、UriComponentsBuilder、ServletUriComponentsBuilder
+
+### 在 DispatcherServlet 类中的 doDispatch 方法
+
+```java
+// 确定当前请求的处理程序适配器
+HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+```
+
+![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640868221671image-20211229153857567.png)
+
+0. 支持方法上标注@RequestMapping 
+1. 函数式 RouterFunctionMapping 的
+
+### 使用刚刚获得的处理适配器进行调用方法
+
+```java
+mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
+```
+
+在 `ServletInvocableHandlerMethod`  `invokeAndHandle` 方法中的 
+
+```java
+// 获取请求参数
+Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
+```
+
+![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640868199071image-20211229155023045.png)
+
+获取参数的实际方法
+
+```java
+protected Object[] getMethodArgumentValues(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,Object... providedArgs) throws Exception {
+    
+    MethodParameter[] parameters = getMethodParameters();
+    if (ObjectUtils.isEmpty(parameters)) {
+        return EMPTY_ARGS;
+    }
+	// 初始化获取参数后存放的容器
+    Object[] args = new Object[parameters.length];
+    for (int i = 0; i < parameters.length; i++) {
+        MethodParameter parameter = parameters[i];
+        // 设置方法参数名称发现器，缺省会是 DefaultParameterNameDiscoverer，
+        // 方法参数名称发现器用于发现该参数的名称，该名称用于从请求上下文中分析该参数的参数值
+        parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
+        //  首先尝试  从 providedArgs 中获取该参数的参数值，
+        // Spring MVC 默认情况下 providedArgs 总是为空，所以这里关于应用 providedArgs 的
+        // 逻辑默认总是空转，不产生实际效果
+        args[i] = findProvidedArgument(parameter, providedArgs);
+        if (args[i] != null) {
+            continue;
+        }
+        // this.resolvers 是调用者 RequestMappingHandlerAdapter 设置给当前对象的
+        // 多个参数解析器的组合对象 HandlerMethodArgumentResolverComposite,
+        // 检测当前参数是否被 this.resolvers 支持，如果不支持则抛出异常
+        // 具体执行看下面获取参数解析器代码块
+        // 注意:这里只是查找是否有支持这个参数的参数解析器而不会获取参数解析器，
+        // 但是执行过这个方法会将找到的参数解析器缓起来
+        if (!this.resolvers.supportsParameter(parameter)) {
+            throw new IllegalStateException(formatArgumentError(parameter, "No suitable resolver"));
+        }
+        try {
+            // 正常情况下这里会使用上面找到的参数解析器的缓存来获取参数解析器
+            // 获取后将使用参数解析器解析参数将解析完成的参数返回如果解析识别则抛出异常
+            args[i] = this.resolvers.resolveArgument(parameter, mavContainer, request, this.dataBinderFactory);
+        }
+        catch (Exception ex) {
+            // Leave stack trace for later, exception may actually be resolved and handled...
+            if (logger.isDebugEnabled()) {
+                String exMsg = ex.getMessage();
+                if (exMsg != null && !exMsg.contains(parameter.getExecutable().toGenericString())) {
+                    logger.debug(formatArgumentError(parameter, exMsg));
+                }
+            }
+            throw ex;
+        }
+    }
+    // 返回解析完成的参数列表
+    return args;
+}
+```
+
+**获取参数解析器**
+
+参数解析器接口是 `org.springframework.web.method.support.HandlerMethodArgumentResolver`
+
+主要有两个方法
+
+1. `boolean supportsParameter(MethodParameter parameter)`;  是否支持解析
+2. `Object resolveArgument(....) throws Exception`; 解析的方法
+
+```java 获取参数解析器
+private HandlerMethodArgumentResolver getArgumentResolver(MethodParameter parameter) {
+    HandlerMethodArgumentResolver result = this.argumentResolverCache.get(parameter);
+    if (result == null) {
+        for (HandlerMethodArgumentResolver resolver : this.argumentResolvers) {
+            if (resolver.supportsParameter(parameter)) {
+                result = resolver;
+                // 找到后放入缓存
+                this.argumentResolverCache.put(parameter, result);
+                break;
+            }
+        }
+    }
+    return result;
+}
+```
+
+### 自定义对象参数封装
+
+自定义对象
+
+```java
+@Data
+public class User {
+    private String username;
+    private int age;
+    private Car car;
+}
+@Data
+public class Car {
+    private String name;
+}
+```
+
+> 请求地址 `user?username=xiaou&age=1&car.name=qq`
+
+```json
+{
+    "username": "xiaou",
+    "age": 1,
+    "car": {
+        "name": "qq"
+    }
+}
+```
+
+使用  `ServletModelAttributeMethodProcessor` 参数解析器
+
+## 返回值处理
+
+还是在 `org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod` 这个类的 `invokeAndHandle` 方法
+```java
+this.returnValueHandlers.handleReturnValue(
+					returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
+```
+

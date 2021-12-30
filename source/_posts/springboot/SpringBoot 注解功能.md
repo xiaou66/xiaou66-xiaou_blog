@@ -154,3 +154,261 @@ public class HelloWorldApplication {
 | @ConditionalOnJndi              | JNDI 存在指定项                                     |
 
 >自动配置类必须在一定的条件下才能生效，我们可以通过启用 debug=true 属性来让控制台打印自动配置报告，这样我们就可以很方便的知道哪些自动配置类生效。
+
+## 请求注解
+
+### @PathVariable
+
+:::info
+
+通过 @PathVariable 可以将 URL 中占位符参数 {xxx} 绑定到处理器类的方法形参中 @PathVariable(“xxx“)
+
+:::
+
+#### 参数
+
+| 参数名   | 说明         |      |
+| -------- | ------------ | ---- |
+| value    | 路径参数名称 |      |
+| required | 是否必须     |      |
+
+#### 演示
+
+```java
+@GetMapping("/init/{id}/{uid}")
+public Map<String, Object> init(@PathVariable Integer id, @PathVariable("uid") String userId,
+                                @PathVariable Map<String, String> map) {
+    Map<String, Object> result = new HashMap<>();
+    result.put("id", id);
+    result.put("userId", userId);
+    result.put("map", map);
+    return result;
+}
+```
+
+`@PathVariable Integer id` 必须 id 和上面路径的 id 一致如果不一致则需要使用 `@PathVariable("uid")` 指定。如果要获取全部的 PathVariable 可以使用 `Map<String, String>` 定义形参然后使用 @PathVariable 注解修饰。
+
+**结果** 
+
+```json
+{
+    "id": 11,
+    "userId": "22",
+    "map": {
+        "uid": "22",
+        "id": "11"
+    }
+}
+```
+
+### @RequestParam
+
+:::info
+
+@RequestParam：将请求参数绑定到你控制器的方法参数上（是springmvc中接收普通参数的注解）
+
+:::
+
+#### 参数
+| 参数名       | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| value        | 路径参数名称默认为参数名称                                   |
+| required     | 是否必须                                                     |
+| defaultValue | 默认参数值，如果设置了该值，required=true将失效，自动为false,如果没有传该参数，就使用默认值 |
+
+#### 演示
+
+```java
+@GetMapping("/params")
+public Map<String, Object> params(String name, @RequestParam("uid") Integer userId,
+                                  @RequestParam(defaultValue = "false") Boolean status) {
+    Map<String, Object> result = new HashMap<>();
+    result.put("id", name);
+    result.put("userId", userId);
+    result.put("status", status);
+    return result;
+}
+```
+
+**结果**
+
+```json
+{
+    "id": "xiaou",
+    "userId": 1,
+    "status": false
+}
+```
+
+> 这个注解也是可以使用 `Map<String, String>` 接收所有的 RequestParam 的参数
+
+### @RequestHeader
+
+:::info
+
+@RequestHeader 用于将 Web 请求头中的数据映射到控制器处理方法的参数中。
+
+:::
+
+#### 参数
+
+| 参数名       | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| value        | 路径参数名称默认为参数名称                                   |
+| required     | 是否必须                                                     |
+| defaultValue | 默认参数值，如果设置了该值，required=true将失效，自动为false,如果没有传该参数，就使用默认值 |
+
+#### 演示
+
+```java
+@GetMapping("/requestHeader")
+public Map<String, Object> requestHeader(@RequestHeader("User-Agent") String userAgent) {
+    Map<String, Object> result = new HashMap<>();
+    result.put("userAgent", userAgent);
+    return result;
+}
+```
+
+**结果**
+
+```json
+{
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
+}
+```
+
+>这个注解也是可以使用 `Map<String, String>` 接收所有的 RequestParam 的参数
+
+### @CookieValue
+
+:::info
+
+@RequestHeader 用于将 Web 请求头中的 cookie 数据取出
+
+:::
+
+#### 参数
+
+| 参数名       | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| value        | 路径参数名称默认为参数名称                                   |
+| required     | 是否必须                                                     |
+| defaultValue | 默认参数值，如果设置了该值，required=true将失效，自动为false,如果没有传该参数，就使用默认值 |
+
+#### 演示
+
+```java
+@GetMapping("/getCookie")
+public Map<String, Object> getCookie(@CookieValue("NMTID") String cookieValue,
+                                     @CookieValue("NMTID") Cookie cookie) {
+    Map<String, Object> result = new HashMap<>();
+    result.put("NMTID_info", cookie);
+    result.put("NMTID", cookieValue);
+    return result;
+}
+```
+
+**结果**
+
+```json
+{
+    "NMTID_info": {
+        "name": "NMTID",
+        "value": "00OQcXWEKqZu6SPVEu2pOFJL8dr6ykAAAF6Rr7CkA",
+        "version": 0,
+        "comment": null,
+        "domain": null,
+        "maxAge": -1,
+        "path": null,
+        "secure": false,
+        "httpOnly": false
+    },
+    "NMTID": "00OQcXWEKqZu6SPVEu2pOFJL8dr6ykAAAF6Rr7CkA"
+}
+```
+
+### @RequestAttribute
+
+:::info
+
+获取 HTTP 的请求（request）对象属性值，用来传递给控制器的参数。
+
+:::
+
+### @RequestBody
+
+:::info
+
+@RequestBody 主要用来接收前端传递给后端的 json 字符串中的数据的 (请求体中的数据的)
+
+:::
+#### 参数
+
+| 参数名       | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| value        | 路径参数名称默认为参数名称                                   |
+| required     | 是否必须                                                     |
+| defaultValue | 默认参数值，如果设置了该值，required=true将失效，自动为false,如果没有传该参数，就使用默认值 |
+
+#### 演示
+
+```java
+@PostMapping("requestBody")
+public Map<String, String> requestBody(@RequestBody Map<String, String> requestHeaderMap) {
+    return requestHeaderMap;
+}
+```
+
+**结果 **
+
+```json
+// 传递 body  Content-Type = "application/json"
+{"a":"1","b":"2"}
+// 返回
+{"a":"1","b":"2"}
+```
+
+:::warning 
+
+1. 一个请求，只有一个RequestBody
+2. 当同时使用 @RequestParam（）和 @RequestBody 时，@RequestParam（）指定的参数可以是普通元素、
+   数组、集合、对象等等 (即:当，@RequestBody 与 @RequestParam() 可以同时使用时，原 SpringMVC 接收
+   参数的机制不变，只不过 RequestBody 接收的是请求体里面的数据；而 RequestParam 接收的是 key-value里面的参数，所以它会被切面进行处理从而可以用普通元素、数组、集合、对象等接收)。 即：如果参数时放在请求体中，application/json 传入后台的话，那么后台要用 @RequestBody 才能接收到； 如果不是放在请求体中的话，那么后台接收前台传过来的参数时，要用 @RequestParam 来接收，或
+   则形参前 什么也不写也能接收。
+
+:::
+
+
+### @MatrixVariable
+
+:::info
+
+矩阵变量可以出现在任何路径片段中，每一个矩阵变量都用分号（;）隔开。比如 “/cars;color=red;year=2012”。多个值可以用逗号隔开，比如 “color=red,green,blue”，或者分开写 “color=red;color=green;color=blue”
+
+:::
+
+#### 开启方法
+
+Springboot 默认是无法使用矩阵变量绑定参数的。需要覆盖 WebMvcConfigurer 中的 configurePathMatch 方法。
+
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        UrlPathHelper urlPathHelper = new UrlPathHelper();
+        urlPathHelper.setRemoveSemicolonContent(false);
+        configurer.setUrlPathHelper(urlPathHelper);
+    }
+}
+```
+
+#### 参数
+
+| 参数名       | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| value        | 路径参数名称默认为参数名称                                   |
+| required     | 是否必须                                                     |
+| defaultValue | 默认参数值，如果设置了该值，required=true将失效，自动为false,如果没有传该参数，就使用默认值 |
+| pathVar      | 矩阵变量所在的URI路径变量的名称，如果需要消除歧义(例如，在多个路径段中出现同名的矩阵变量)。 |
+
