@@ -13,7 +13,7 @@
     "version": "5.4.0"
   },
   "dependencies": {
-    "hexo": "^5.0.0",
+    "hexo": "^5.4.1",
     "hexo-algoliasearch": "^1.0.0",
     "hexo-autoprefixer": "^2.0.0",
     "hexo-feed": "^1.1.0",
