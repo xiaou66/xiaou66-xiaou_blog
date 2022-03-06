@@ -4,3 +4,10 @@
   desc: 一个有各种各样东西的个人博客
   image: https://blog.666baby.com/wp-content/uploads/2021/10/bitbug_favicon.ico
   color: "#e9546b"
+
+- site: Naive ghost
+  owner: Naive ghost
+  url: https://ycy0731.xyz/
+  desc: Mashiro&Hitomi
+  image: https://cdn.jsdelivr.net/gh/Fuukei/Public_Repository@latest/vision/basic/favicon.ico
+  color: "#e9546b"

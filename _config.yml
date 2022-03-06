@@ -62,12 +62,14 @@ category_map: # edit for Theme.shoka
   打包工具: webpack
   java: java
   javaFrame: java 框架
+  mysql: MySql
 tag_map:
   js: js
   Java: java
   kotlin: kotlin
   SpringBoot: springboot
   Rollup: rollup
+  sql: sql
 
 # Date / Time format
 ## Hexo uses Moment.js to parse and display date
