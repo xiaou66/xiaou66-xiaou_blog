@@ -10,10 +10,10 @@
     "setup": "hexo clean && hexo g && hexo s"
   },
   "hexo": {
-    "version": "5.4.0"
+    "version": "6.0.0"
   },
   "dependencies": {
-    "hexo": "^5.0.0",
+    "hexo": "^6.0.0",
     "hexo-algoliasearch": "^1.0.0",
     "hexo-autoprefixer": "^2.0.0",
     "hexo-feed": "^1.1.0",
