@@ -89,12 +89,7 @@ theme: shoka # edit for Theme.shoka
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
-  type: git
-  repo: root@110.40.152.35:/www/wwwroot/blog.xiaou.icu.git
-    branch: master
-    name: xiaou
-    email: 2630316030@qq.com
-
+  type:
 
 # edit for Theme.shoka
 autoprefixer:
