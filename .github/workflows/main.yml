@@ -39,7 +39,7 @@ jobs:
       - name: 安装依赖
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          npm install --save
+          npm install --registry=https://registry.npm.taobao.org
       - name: 生成静态文件
         run: |
           hexo clean
