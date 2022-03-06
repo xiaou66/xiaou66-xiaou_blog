@@ -22,7 +22,6 @@ menu:
   tags: 标签
   about: 关于
   search: 搜索
-  friends: 友链
 
 sidebar:
   overview: 站点概览
@@ -55,6 +54,7 @@ post:
     link: 本文链接
     license_title: 版权声明
     license_content: "本站所有文章除特别声明外，均采用 %s 许可协议。转载请注明出处！"
+    nocopy: "<span class=\"red\">本页内容禁止转载！</span>"
 
 footer:
   powered: "基于 %s"
@@ -64,7 +64,7 @@ footer:
 counter:
   index:
     post: "%d 篇文章"
-    category: "%d 个子项，"
+    category:  "%d 个子项，"
   tag_cloud:
     zero: 暂无标签
     one: 目前共计 1 个标签
@@ -106,7 +106,7 @@ symbol:
   month: 月
 
 reward:
-  donate: 充电
+  donate: 赞赏
   text: 请我喝[茶]~(￣▽￣)~*
   wechatpay: 微信支付
   alipay: 支付宝
@@ -132,6 +132,7 @@ symbols_count_time:
 
 tips:
   copyright: "复制成功，转载请遵守 %s 协议。"
+  nocopy: "复制失败，本页内容禁止转载！"
 
 quiz:
   choice: 单选题

@@ -50,4 +50,4 @@ reward:
   account:
     wechatpay: /wechatpay.png
     alipay: /alipay.png
-    # paypal: /paypal.pngs
+    # paypal: /paypal.png

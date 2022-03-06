@@ -493,4 +493,412 @@ public class Car {
 this.returnValueHandlers.handleReturnValue(
 					returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
 ```
+### 所有的返回值解析器
+ ![image-20220108105800946](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644745912620image-20220108105800946.png)
+
+### 查找返回值处理器
+
+```java HandlerMethodReturnValueHandlerComposite.java
+public void handleReturnValue(@Nullable Object returnValue, MethodParameter returnType,
+                              ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
+    // 根据返回类型查找返回值解析器
+    HandlerMethodReturnValueHandler handler = selectHandler(returnValue, returnType);
+    if (handler == null) {
+        // 没有找到就抛出异常
+        throw ....
+    }
+    // 使用找到的返回值解析器解析返回值
+    handler.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
+}
+// 查找过程
+@Nullable
+private HandlerMethodReturnValueHandler selectHandler(@Nullable Object value, MethodParameter returnType) {
+    boolean isAsyncValue = isAsyncReturnValue(value, returnType);
+    for (HandlerMethodReturnValueHandler handler : this.returnValueHandlers) {
+        if (isAsyncValue && !(handler instanceof AsyncHandlerMethodReturnValueHandler)) {
+            continue;
+        }
+        if (handler.supportsReturnType(returnType)) {
+            return handler;
+        }
+    }
+    return null;
+}
+```
+
+###  返回值处理器接口
+
+```java HandlerMethodReturnValueHandler
+public interface HandlerMethodReturnValueHandler {
+
+	/**
+	 * 该处理器是否支持这个类型
+	 * @param returnType the method return type to check
+	 * @return {@code true} if this handler supports the supplied return type;
+	 * {@code false} otherwise
+	 */
+	boolean supportsReturnType(MethodParameter returnType);
+
+	/**
+	 * 先模型中设置值或者视图
+	 * {@link ModelAndViewContainer#setRequestHandled} flag to {@code true}
+	 * to indicate the response has been handled directly.
+	 * @param returnValue the value returned from the handler method
+	 * @param returnType the type of the return value. This type must have
+	 * previously been passed to {@link #supportsReturnType} which must
+	 * have returned {@code true}.
+	 * @param mavContainer 当前请求的 ModelAndViewContainer
+	 * @param webRequest 当前的请求的 Request
+	 * @throws Exception if the return value handling results in an error
+	 */
+	void handleReturnValue(@Nullable Object returnValue, MethodParameter returnType,
+			ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception;
+}
+```
+
+### 处理返回值并且写到返回流中
+
+```java writeWithMessageConverters 方法
+protected <T> void writeWithMessageConverters(@Nullable T value, MethodParameter returnType,
+                                              ServletServerHttpRequest inputMessage, ServletServerHttpResponse outputMessage)
+    throws IOException, HttpMediaTypeNotAcceptableException, HttpMessageNotWritableException {
+    
+    Object body;
+    Class<?> valueType;
+    Type targetType;
+    // 获取返回值的类型
+    if (value instanceof CharSequence) {
+        body = value.toString();
+        valueType = String.class;
+        targetType = String.class;
+    }
+    else {
+        body = value;
+        valueType = getReturnValueType(body, returnType);
+        targetType = GenericTypeResolver.resolveType(getGenericType(returnType), returnType.getContainingClass());
+    }
+    // 是否是流类型的返回值
+    if (isResourceType(value, returnType)) {
+        outputMessage.getHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
+        if (value != null && inputMessage.getHeaders().getFirst(HttpHeaders.RANGE) != null &&
+            outputMessage.getServletResponse().getStatus() == 200) {
+            Resource resource = (Resource) value;
+            try {
+              List<HttpRange> httpRanges = inputMessage.getHeaders().getRange();
+              outputMessage.getServletResponse().setStatus(HttpStatus.PARTIAL_CONTENT.value());
+              body = HttpRange.toResourceRegions(httpRanges, resource);
+              valueType = body.getClass();
+              targetType = RESOURCE_REGION_LIST_TYPE;
+            }
+            catch (IllegalArgumentException ex) {
+                // 异常处理
+                ...
+            }
+        }
+    }
+    // 响应媒体类型
+    MediaType selectedMediaType = null;
+    MediaType contentType = outputMessage.getHeaders().getContentType();
+    // 判断是否已经设置了媒体类型
+    boolean isContentTypePreset = contentType != null && contentType.isConcrete();
+    if (isContentTypePreset) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Found 'Content-Type:" + contentType + "' in response");
+        }
+        // 直接将设置的媒体类型设置上去
+        selectedMediaType = contentType;
+    }
+    else {
+        HttpServletRequest request = inputMessage.getServletRequest();
+        List<MediaType> acceptableTypes;
+        try {
+            // 在请求中默认获取 accept 字段并且解析
+            // 这里会调用内容协商管理器
+            acceptableTypes = getAcceptableMediaTypes(request);
+        }
+        catch (HttpMediaTypeNotAcceptableException ex) {
+            int series = outputMessage.getServletResponse().getStatus() / 100;
+            if (body == null || series == 4 || series == 5) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Ignoring error response content (if any). " + ex);
+                }
+                return;
+            }
+            throw ex;
+        }
+        // 获取服务器可以提供的媒体类型
+        List<MediaType> producibleTypes = getProducibleMediaTypes(request, valueType, targetType);
+        if (body != null && producibleTypes.isEmpty()) {
+            // 未找到
+            throw new HttpMessageNotWritableException(
+                "No converter found for return value of type: " + valueType);
+        }
+        // 可以使用的媒体类型
+        List<MediaType> mediaTypesToUse = new ArrayList<>();
+        // 通过循环找到游览器和服务器都支持的媒体类型(交集)
+        for (MediaType requestedType : acceptableTypes) {
+            for (MediaType producibleType : producibleTypes) {
+                if (requestedType.isCompatibleWith(producibleType)) {
+                    mediaTypesToUse.add(getMostSpecificMediaType(requestedType, producibleType));
+                }
+            }
+        }
+        if (mediaTypesToUse.isEmpty()) {
+            // 没有交集
+            if (body != null) {
+                throw new HttpMediaTypeNotAcceptableException(producibleTypes);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("No match for " + acceptableTypes + ", supported: " + producibleTypes);
+            }
+            return;
+        }
+        // 根据游览器设置的权重对可以使用的媒体类型的集合进行排序
+        MediaType.sortBySpecificityAndQuality(mediaTypesToUse);
+        
+        for (MediaType mediaType : mediaTypesToUse) {
+            // 判断是否是具体的媒体类型不带
+            if (mediaType.isConcrete()) {
+                selectedMediaType = mediaType;
+                break;
+            }
+            else if (mediaType.isPresentIn(ALL_APPLICATION_MEDIA_TYPES)) {
+                selectedMediaType = MediaType.APPLICATION_OCTET_STREAM;
+                break;
+            }
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Using '" + selectedMediaType + "', given " +
+                         acceptableTypes + " and supported " + producibleTypes);
+        }
+    }
+    // 使用消息转换器转换数据并且输出
+    if (selectedMediaType != null) {
+        selectedMediaType = selectedMediaType.removeQualityValue();
+        for (HttpMessageConverter<?> converter : this.messageConverters) {
+            GenericHttpMessageConverter genericConverter = (converter instanceof GenericHttpMessageConverter ?
+                                                            (GenericHttpMessageConverter<?>) converter : null);
+            if (genericConverter != null ?
+                ((GenericHttpMessageConverter) converter).canWrite(targetType, valueType, selectedMediaType) :
+                converter.canWrite(valueType, selectedMediaType)) {
+                body = getAdvice().beforeBodyWrite(body, returnType, selectedMediaType,
+                                                   (Class<? extends HttpMessageConverter<?>>) converter.getClass(),
+                                                   inputMessage, outputMessage);
+                if (body != null) {
+                    Object theBody = body;
+                    LogFormatUtils.traceDebug(logger, traceOn ->
+                                              "Writing [" + LogFormatUtils.formatValue(theBody, !traceOn) + "]");
+                    addContentDispositionHeader(inputMessage, outputMessage);
+                    if (genericConverter != null) {
+                        genericConverter.write(body, targetType, selectedMediaType, outputMessage);
+                    }
+                    else {
+                        ((HttpMessageConverter) converter).write(body, selectedMediaType, outputMessage);
+                    }
+                }
+                else {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Nothing to write: null body");
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    if (body != null) {
+        Set<MediaType> producibleMediaTypes =
+            (Set<MediaType>) inputMessage.getServletRequest()
+            .getAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE);
+
+        if (isContentTypePreset || !CollectionUtils.isEmpty(producibleMediaTypes)) {
+            throw new HttpMessageNotWritableException(
+                "No converter for [" + valueType + "] with preset Content-Type '" + contentType + "'");
+        }
+        throw new HttpMediaTypeNotAcceptableException(getSupportedMediaTypes(body.getClass()));
+    }
+}
+```
+
+#### Spring 支持的返回值
+
+1. ModelAndView
+2. Model
+3. View
+4. ResponseEntity 
+5. ResponseBodyEmitter
+6. HttpEntity
+7. HttpHeaders
+8. Callable
+9. DeferredResult
+10. ListenableFuture
+11. CompletionStage
+12. WebAsyncTask
+13. 有 @ModelAttribute 且为对象类型的
+14. @ResponseBody 注解 ---> RequestResponseBodyMethodProcessor
+
+#### 总结
+
+1. 返回值处理器判断是否支持这种类型的返回值 `supportsReturnType`
+2. 返回值处理器可调用 `handleReturnValue` 进行处理
+3. RequestResponseBodyMethodProcessor 可以处理返回值标了@ResponseBody 注解的
+   - 内容协商 ( 根据游览器默认会以请求头 **accept** 告诉服务器自己可以处理什么样的格式信息 )
+   - 服务器最终根据自己自身的能力，决定服务器能生产出什么样内容类型的数据
+   - Spring MVC 会按照顺序遍历所有容器底层的 `HttpMessageConverter` 看谁可以处理
+     - 得到 `MappingJackson2CborHttpMessageConverter` `object` 转 `JSON`
+     - 利用 `MappingJackson2CborHttpMessageConverter` 转换为 JSON 字符串再写到流中
+
+#### 游览器 appect
+
+![image-20220113204806200](D:\code\xiaou_blog\source\_posts\designMode\image\image-20220113204806200.png)
+
+### HttpMessageConverter
+
+ ![image-20220113205448939](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644745972141image-20220113205448939.png)
+
+#### **默认消息转换器**
+
+ ![image-20220108140902237](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644745975199image-20220108140902237.png)
+
+0. 只支持Byte类型的
+1. String
+2. String
+3. Resource
+4. ResourceRegion
+5. DOMSource.class \SAXSource.class \ StAXSource.class\StreamSource.class \ Source.class
+6. MultiValueMap
+7. true
+8. false
+9. 支持注解方式xml处理的
+
+> 最终 MappingJackson2HttpMessageConverter  把对象转为 JSON（利用底层的 jackson 的 objectMapper 转换的）
+
+### 内容协商
+
+#### 配置
+
+```xml
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+```
+
+```yaml
+spring:
+    contentnegotiation:
+      favor-parameter: true  # 开启请求参数内容协商模式
+```
+
+#### 效果
+
+请求地址: `/user?username=xiaou&age=1&car.name=qq&format=json`
+
+```json
+{
+    "username": "xiaou",
+    "age": 1,
+    "car": {
+        "name": "qq"
+    }
+}
+```
+
+请求地址: `/user?username=xiaou&age=1&car.name=qq&format=xml`
+
+```xml
+<User>
+    <username>xiaou</username>
+    <age>1</age>
+    <car>
+        <name>qq</name>
+    </car>
+</User>
+```
+
+#### 执行流程
+
+在 ContentNegotiationManager 内容协商管理器中
+
+```java
+public List<MediaType> resolveMediaTypes(NativeWebRequest request) throws HttpMediaTypeNotAcceptableException {
+    for (ContentNegotiationStrategy strategy : this.strategies) {
+        List<MediaType> mediaTypes = strategy.resolveMediaTypes(request);
+        if (mediaTypes.equals(MEDIA_TYPE_ALL_LIST)) {
+            continue;
+        }
+        return mediaTypes;
+    }
+    return MEDIA_TYPE_ALL_LIST;
+}
+```
+
+ **协商策略**
+
+ ![image-20220113214247788](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644745980140image-20220113214247788.png)
+
+0. 开启请求参数内容协商策略才会有
+1. 请求头协商默认
+
+:::warning
+
+这里可以注意到 **请求参数内容协商策略** 高于 **请求头协商策略**
+
+:::
+
+#### 自定义内容协商
+
+1. 实现 `HttpMessageConverter` 接口
+
+```java
+public class CustomHttpMessageConvert implements HttpMessageConverter<User> {
+    @Override
+    public boolean canRead(Class<?> clazz, MediaType mediaType) {
+        return false;
+    }
+
+    @Override
+    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
+        return clazz.isAssignableFrom(User.class);
+    }
+
+    /**
+     * 服务器需要统计所有的 messageConverter 都能写出那些内容
+     * application/x-xiaou
+     * @return
+     */
+    @Override
+    public List<MediaType> getSupportedMediaTypes() {
+        return MediaType.parseMediaTypes("application/x-xiaou");
+    }
+
+    @Override
+    public User read(Class<? extends User> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+        return null;
+    }
+
+    @Override
+    public void write(User user, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+        String data = user.getUsername() + ":" + user.getAge();
+        outputMessage.getBody().write(data.getBytes(StandardCharsets.UTF_8));
+    }
+}
+```
+
+2. 实现 `WebMvcConfigurer` 接口中的 
+
+`public void extendMessageConverters(List<HttpMessageConverter<?>> converters)` 方法
+
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(new CustomHttpMessageConvert());
+    }
+}
+```
+
+
 
