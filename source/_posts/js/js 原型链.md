@@ -560,7 +560,7 @@ console.log(child1 instanceof Parent)
 console.log(child1 instanceof OtherParent)
 ```
 
-  ![image-20211207142810403](D:\code\xiaou_blog\source\_posts\designMode\image\image-20211207142810403.png)
+  ![image-20211207142810403](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646536699144image-20211207142810403.png)
 
  ![image-20211207142747192](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638858468844image-20211207142747192.png)
 
