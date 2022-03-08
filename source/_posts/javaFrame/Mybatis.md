@@ -7,7 +7,7 @@ categories:
 tags:
   - [java]
 ---
-# MyBaits
+# MyBaits 架构
 
 [官方文档](https://mybatis.org/mybatis-3/zh/getting-started.html)
 
@@ -481,3 +481,238 @@ public void setParameters(PreparedStatement ps) {
 这个方法执行后方法的 SQL 中的参数已经确定下来了然后就返回到第「4」步执行SQL并封装结果集返回
 
 ![image-20211211122049621](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712830313image-20211211122049621.png)
+
+# Mybaits 缓存
+
+## 一级缓存
+
+在应用运行过程中，我们有可能在一次数据库会话中，执行多次查询条件完全相同的 SQL，MyBatis 提供了一级缓存的方案优化这部分场景，如果是相同的 SQL 语句，会优先命中一级缓存，避免直接对数据库进行查询，提高性能。
+
+![image-20220308121515113](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646715734799image-20220308121515113.png)
+
+每个 SqlSession 中持有了 Executor，每个 Executor 中有一个 LocalCache。当用户发起查询时，MyBatis 根据当前执行的语句生成 MappedStatement，在 Local Cache 进行查询，如果缓存命中的话，直接返回结果给用户，如果缓存没有命中的话，查询数据库，结果写入 Local Cache，最后返回结果给用户。
+
+![image-20220308134057361](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646718080830image-20220308134057361.png)
+
+### 配置
+
+我们来看看如何使用 MyBatis 一级缓存。开发者只需在 MyBatis 的配置文件中，添加如下语句，就可以使用一级缓存。共有两个选项，SESSION 或者 STATEMENT，默认是 `SESSION` 级别，即在一个 MyBatis 会话中执行的所有语句，都会共享这一个缓存。一种是 `STATEMENT` 级别，可以理解为缓存只对当前执行的这一个 Statement 有效。
+
+```java
+@Test
+public void sessionTest() {
+    SqlSession sqlSession = factory.openSession(false);
+    UsersMapper mapper = sqlSession.getMapper(UsersMapper.class);
+    System.out.println(mapper.getAllUser());
+    System.out.println(mapper.getAllUser());
+    sqlSession.close();
+}
+```
+
+```yaml
+mybatis:
+    local-cache-scope: session
+```
+
+> 可以发现一级缓存在当前的 session 中有效，两条查询语句实际就执行了一条
+
+![image-20220308135429324](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646719253335image-20220308135429324.png)
+
+在同一个 session 中 如果对数据发生了修改的操作，一级缓存会失效
+
+```java
+@Test
+public void sessionTest2() {
+    SqlSession sqlSession = factory.openSession(false);
+    UsersMapper mapper = sqlSession.getMapper(UsersMapper.class);
+    System.out.println(mapper.getAllUser());
+    mapper.insertUser(new Users(0, UUID.randomUUID().toString().replace("-", "")));
+    System.out.println(mapper.getAllUser());
+    sqlSession.close();
+}
+```
+
+![image-20220308140616527](D:\otherCode\xiaou66-xiaou_blog\source\posts_images\image-20220308140616527.png)
+
+开启两个`SqlSession`，在`sqlSession1`中查询数据，使一级缓存生效，在`sqlSession2`中更新数据库，验证一级缓存只在数据库会话内部共享。
+
+```java
+@Test
+public void sessionTest3() {
+    SqlSession session1 = factory.openSession(false);
+    UsersMapper usersMapper1 = session1.getMapper(UsersMapper.class);
+    SqlSession session2 = factory.openSession(false);
+    UsersMapper usersMapper2 = session2.getMapper(UsersMapper.class);
+    System.out.println(usersMapper1.getAllUser());
+    usersMapper2.insertUser(new Users(0, "xiaoz"));
+    session2.commit();
+    session2.close();
+    System.out.println(usersMapper1.getAllUser());
+    session1.close();
+}
+```
+
+在 session1 做两次查询在这两次查询的中间 session2  插入一行数据而 session1 的二次读取并没有触发真实的查询而是走了一级缓存，所以出现了脏数据。
+
+![image-20220308141534541](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646720175317image-20220308141534541.png)
+
+### 在对数据进行操作后缓存失效
+
+在 `BaseExecutor` 中 `update` 方法中可以看到在委托子类执行 `doUpdate` 方法之前会执行 `clearLocalCache()` 会清理本地缓存。
+
+```java
+@Override
+public int update(MappedStatement ms, Object parameter) throws SQLException {
+  ErrorContext.instance()
+      .resource(ms.getResource())
+      .activity("executing an update")
+      .object(ms.getId());
+  if (closed) {
+    throw new ExecutorException("Executor was closed.");
+  }
+  clearLocalCache();
+  return doUpdate(ms, parameter);
+}
+```
+
+insert 和 delete 方法都是统一走 update 方法
+
+```java
+@Override
+public int delete(String statement, Object parameter) {
+    return update(statement, parameter);
+}
+@Override
+public int insert(String statement, Object parameter) {
+    return update(statement, parameter);
+}
+```
+
+### 缓存的 key 是怎么生成的
+
+将 `MappedStatement` 的 Id、SQL 的 offset、SQL 的 limit、SQL 本身以及 SQL 中的参数传入了 CacheKey 这个类，最终构成 CacheKey
+
+```java
+CacheKey cacheKey = new CacheKey();
+cacheKey.update(ms.getId());
+cacheKey.update(rowBounds.getOffset());
+cacheKey.update(rowBounds.getLimit());
+cacheKey.update(boundSql.getSql());
+if (configuration.getEnvironment() != null) {
+    // issue #176
+    cacheKey.update(configuration.getEnvironment().getId());
+}
+```
+
+### 总结
+
+1. MyBatis 一级缓存的生命周期和 SqlSession 一致。
+2. MyBatis 一级缓存内部设计简单，只是一个没有容量限定的 HashMap，在缓存的功能性上有所欠缺。
+3. MyBatis 的一级缓存最大范围是 SqlSession 内部，有多个 SqlSession 或者分布式的环境下，数据库写操作会引起脏数据，建议设定缓存级别为 Statement。
+
+## 二级缓存
+
+在上文中提到的一级缓存中，其最大的共享范围就是一个 SqlSession 内部，如果多个 SqlSession 之间需要共享缓存，则需要使用到二级缓存。开启二级缓存后，会使用 `CachingExecutor` 装饰 Executor，进入一级缓存的查询流程前，先在 `CachingExecutor` 进行二级缓存的查询，具体的工作流程如下所示。
+
+![image-20220308145354322](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646722448575image-20220308145354322.png)
+
+> 二级缓存开启后，同一个 namespace 下的所有操作语句，都影响着同一个 Cache，即二级缓存被多个 SqlSession 共享，是一个全局的变量。
+>
+> 当开启缓存后，数据的查询执行的流程就是 二级缓存 -> 一级缓存 -> 数据库。
+
+### 配置
+
+1. 开启二级缓存
+
+```xml
+<setting name="cacheEnabled" value="true"/>
+```
+
+或
+
+```yml
+mybatis:
+  configuration:
+    cache-enabled: true
+```
+
+2. 声明 namespace 使用二级缓存
+   - 在 mapper 配置文件中使用 `<cache/>` 标签
+   - 在接口中使用 `@CacheNamespace` 注解
+
+| `@CacheNamespace`    | `<cache/>`    | 描述                                                         |
+| -------------------- | ------------- | ------------------------------------------------------------ |
+| implementation       | type          | cache使用的类型，默认是 `PerpetualCache`，这在一级缓存中提到过。 |
+| eviction             | eviction      | 定义回收的策略，常见的有 FIFO，LRU。默认 LRU                 |
+| flushInterval        | flushInterval | 配置一定时间自动刷新缓存，单位是毫秒 默认 0                  |
+| size                 | size          | 最多缓存对象的个数。                                         |
+| readWrite            | readOnly      | 是否只读，若配置可读写，则需要对应的实体类能够序列化         |
+| blocking             | blocking      | 若缓存中找不到对应的 key，是否会一直阻塞，直到有对应的数据进入缓存。 默认false |
+| `@CacheNamespaceRef` | cache-ref     | 代表引用别的命名空间的 Cache 配置，两个命名空间的操作使用的是同一个 Cache。 |
+
+implementation 内置 cache 类
+
+- `SynchronizedCache`：同步 Cache，实现比较简单，直接使用 synchronized 修饰方法。
+
+- `LoggingCache`：日志功能，装饰类，用于记录缓存的命中率，如果开启了 DEBUG 模式，则会输出命中率日志。
+
+  `SerializedCache`：序列化功能，将值序列化后存到缓存中。该功能用于缓存返回一份实例的 Copy，用于保存线程安全。
+
+- `LruCache`：采用了 Lru 算法的 Cache 实现，移除最近最少使用的 Key/Value。
+- `PerpetualCache`： 作为为最基础的缓存类，底层实现比较简单，直接使用了 HashMap。
+
+### 实验
+
+测试二级缓存效果，不提交事务，`sqlSession1`查询完数据后，`sqlSession2`相同的查询是否会从缓存中获取数据。
+
+```java
+@Test
+public void cache2Test1() {
+    SqlSession session1 = factory.openSession(false);
+    UsersMapper usersMapper1 = session1.getMapper(UsersMapper.class);
+    SqlSession session2 = factory.openSession(false);
+    UsersMapper usersMapper2 = session2.getMapper(UsersMapper.class);
+    System.out.println(usersMapper1.getUserById(1));
+    System.out.println(usersMapper2.getUserById(1));
+    session1.close();
+    session2.close();
+}
+```
+
+我们可以看到，当`sqlsession`没有调用`commit()`方法时，二级缓存并没有起到作用。
+
+![image-20220308153309726](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646725523314image-20220308153309726.png)
+
+测试二级缓存效果，当提交事务时，`sqlSession1`查询完数据后，`sqlSession2`相同的查询是否会从缓存中获取数据。
+
+```java
+@Test
+public void cache2Test2() {
+    SqlSession session1 = factory.openSession(false);
+    UsersMapper usersMapper1 = session1.getMapper(UsersMapper.class);
+    System.out.println(usersMapper1.getUserById(1));
+    session1.commit();
+    session1.close();
+
+    SqlSession session2 = factory.openSession(false);
+    UsersMapper usersMapper2 = session2.getMapper(UsersMapper.class);
+    System.out.println(usersMapper2.getUserById(1));
+    session2.close();
+}
+```
+
+![image-20220308154014323](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646725522318image-20220308154014323.png)
+
+测试`update`操作是否会刷新该`namespace`下的二级缓存。
+
+![image-20220308154506959](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646725519256image-20220308154506959.png)
+
+我们可以看到，在 sqlSession3 更新数据库，并提交事务后，sqlsession2 的 StudentMapper namespace 下的查询走了数据库，没有走 Cache。
+
+要是多表查询可能处出现缓存不刷新的情况，这时时候就要使用 `@CacheNamespaceRef` 或  `cache-ref`
+
+### 总结
+
+1. MyBatis 的二级缓存相对于一级缓存来说，实现了 SqlSession 之间缓存数据的共享，同时粒度更加的细，能够到 namespace 级别，通过 Cache 接口实现类不同的组合，对 Cache 的可控性也更强。
+2. MyBatis 在多表查询时，极大可能会出现脏数据，有设计上的缺陷，安全使用二级缓存的条件比较苛刻。
+3. 在分布式环境下，由于默认的 MyBatis Cache 实现都是基于本地的，分布式环境下必然会出现读取到脏数据，需要使用集中式缓存将 MyBatis 的 Cache 接口实现，有一定的开发成本，直接使用 Redis、Memcached 等分布式缓存可能成本更低，安全性也更高。
