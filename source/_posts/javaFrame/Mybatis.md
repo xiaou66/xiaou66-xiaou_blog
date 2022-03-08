@@ -15,7 +15,7 @@ tags:
 
 Mybatis的功能架构分为三层：
 
-![image-20211210210241172](D:\code\xiaou_blog\source\_posts\designMode\image\image-20211210210241172.png)
+![image-20211210210241172](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712808315image-20211210210241172.png)
 
 ### 接口层
 
@@ -322,9 +322,9 @@ private <E> List<E> selectList(String statement, Object parameter, RowBounds row
 }
 ```
 
- ![image-20211210224606007](D:\code\xiaou_blog\source\_posts\designMode\image\image-20211210224606007.png)
+ ![image-20211210224606007](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712819317image-20211210224606007.png)
 
- ![image-20211210224632416](D:\code\xiaou_blog\source\_posts\designMode\image\image-20211210224632416.png)
+ ![image-20211210224632416](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712824314image-20211210224632416.png)
 
 2. 在 query 方法 BaseExecutor 在 151 行
 
@@ -480,4 +480,4 @@ public void setParameters(PreparedStatement ps) {
 
 这个方法执行后方法的 SQL 中的参数已经确定下来了然后就返回到第「4」步执行SQL并封装结果集返回
 
-![image-20211211122049621](D:\code\xiaou_blog\source\_posts\designMode\image\image-20211211122049621.png)	
+![image-20211211122049621](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712830313image-20211211122049621.png)
