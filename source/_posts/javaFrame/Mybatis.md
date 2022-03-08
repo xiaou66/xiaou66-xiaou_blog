@@ -711,6 +711,12 @@ public void cache2Test2() {
 
 要是多表查询可能处出现缓存不刷新的情况，这时时候就要使用 `@CacheNamespaceRef` 或  `cache-ref`
 
+### 其他
+
+1. 如果要不使用二级缓存
+   - 接口上使用 `@Options(useCache = false)`
+   - mapper 配置文件使用属性 `useCache = "false"`
+
 ### 总结
 
 1. MyBatis 的二级缓存相对于一级缓存来说，实现了 SqlSession 之间缓存数据的共享，同时粒度更加的细，能够到 namespace 级别，通过 Cache 接口实现类不同的组合，对 Cache 的可控性也更强。
