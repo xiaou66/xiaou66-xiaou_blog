@@ -192,3 +192,6 @@ footer:
 # 文章界面统计
 post:
   count: true
+
+# 图片服务
+image_server: "http://www.dmoe.cc/random.php"
