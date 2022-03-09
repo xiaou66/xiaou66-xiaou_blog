@@ -496,7 +496,7 @@ public void setParameters(PreparedStatement ps) {
 
 ### 配置
 
-我们来看看如何使用 MyBatis 一级缓存。开发者只需在 MyBatis 的配置文件中，添加如下语句，就可以使用一级缓存。共有两个选项，SESSION 或者 STATEMENT，默认是 `SESSION` 级别，即在一个 MyBatis 会话中执行的所有语句，都会共享这一个缓存。一种是 `STATEMENT` 级别，可以理解为缓存只对当前执行的这一个 Statement 有效。
+我们来看看如何使用 MyBatis 一级缓存。开发者只需在 MyBatis 的配置文件中，添加如下语句，就可以使用一级缓存。共有两个选项，SESSION 或者 STATEMENT，默认是 `SESSION` 级别，即在一个 MyBatis 会话中执行的所有语句，都会共享这一个缓存。一种是 `STATEMENT` 级别，可以理解为缓存只对当前执行的这一个 `Statement` 有效。
 
 ```java
 @Test
