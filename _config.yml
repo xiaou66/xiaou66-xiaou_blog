@@ -194,4 +194,4 @@ post:
   count: true
 
 # 图片服务
-image_server: "http://www.dmoe.cc/random.php"
+image_server: "https://api.vvhan.com/api/acgimg"
