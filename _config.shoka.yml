@@ -51,3 +51,6 @@ reward:
     wechatpay: /wechatpay.png
     alipay: /alipay.png
     # paypal: /paypal.png
+
+# 图片服务
+image_server: "https://api.ghser.com/random/api.php"

@@ -192,6 +192,3 @@ footer:
 # 文章界面统计
 post:
   count: true
-
-# 图片服务
-image_server: "https://api.vvhan.com/api/acgimg"
