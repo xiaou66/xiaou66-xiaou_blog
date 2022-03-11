@@ -53,4 +53,4 @@ reward:
     # paypal: /paypal.png
 
 # 图片服务
-# image_server: "https://api.ghser.com/random/api.php"
+image_server: "https://api.ghser.com/random/api.php"
