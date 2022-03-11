@@ -83,5 +83,3 @@ public class JDKProxy {
     }
 }
 ```
-
-### 基于cglib的动态代理
