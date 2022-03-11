@@ -76,6 +76,149 @@ String destroyMethod() default "(inferred)";
 4. session 每次HTTP请求都会产生新的Bean，该Bean在仅在当前session内有效
 5. global session 每次HTTP请求都会产生新的Bean，该Bean在 当前global Session（基于portlet的web应用中）内有效
 
+### @Configuration 和 @Bean 使用
+
+:::info
+
+在 Spring 容器中 @Configuration 和 @Bean 都可以对容器注入 Bean，一般情况下在使用 @Configuration 注解的时候都伴随着 @Bean 注解但是不加 @Configuration 也可以对容器中注入 Bean 那么加和不加又有什么区别呢？🤣
+
+:::
+
+#### 实验
+
+```java 使用 @Configuration
+@Configuration
+public class ConfigBean {
+    @Bean
+    public Users user1() {
+        return new Users()
+            .setAge(18)
+            .setName("xiaou");
+    }
+}
+```
+
+```java 不使用 @Configuration
+@Component
+public class ConfigBean {
+    @Bean
+    public Users user1() {
+        return new Users().setAge(18).setName("xiaou");
+    }
+}
+```
+
+```java 测试类
+@Test void configurationTest() {
+    System.out.println(context.getBean(ConfigBean.class));
+    System.out.println(context.getBean("user1"));
+}
+```
+
+1. 使用  @Configuration 结果
+
+```
+com.example.springdemo.config.ConfigBean$$EnhancerBySpringCGLIB$$e5f9c687@3b9632d1
+Users(name=xiaou, age=18)
+```
+
+2. 不使用 @Configuration 结果
+
+```
+com.example.springdemo.config.ConfigBean@2f508f3c
+Users(name=xiaou, age=18)
+```
+
+发现在使用 @Configuration 注解的时候所标识的类是 CGLIB 代理的, 而没有标识的则没有被 CGLIB 代理. 那么 CGLIB 代理又启到了什么作用.
+
+```java 使用 @Configuration
+@Configuration
+public class ConfigBean {
+    @Bean
+    public Users user1() {
+        System.out.println("user1 被执行了");
+        return new Users()
+                .setAge(18)
+                .setName("xiaou");
+    }
+    @Bean
+    public Users user2() {
+        Users users = this.user1();
+        return new Users()
+                .setName("xiaoz")
+                .setAge(2)
+                .setFather(users);
+    }
+    @Bean
+    public Users user3() {
+        Users users = this.user1();
+        return new Users()
+                .setName("xiaoy")
+                .setAge(4)
+                .setFather(users);
+    }
+}
+```
+
+```java 不使用 @Configuration
+@Component
+public class ConfigBean {
+    @Bean
+    public Users user1() {
+        System.out.println("user1 被执行了");
+        return new Users()
+                .setAge(18)
+                .setName("xiaou");
+    }
+    @Bean
+    public Users user2() {
+        Users users = this.user1();
+        return new Users()
+                .setName("xiaoz")
+                .setAge(2)
+                .setFather(users);
+    }
+    @Bean
+    public Users user3() {
+        Users users = this.user1();
+        return new Users()
+                .setName("xiaoy")
+                .setAge(4)
+                .setFather(users);
+    }
+}
+```
+
+1. 使用  @Configuration 结果
+
+```
+user1 被执行了
+user1 ->Users(name=xiaou, age=18, father=null)
+user2 ->Users(name=xiaoz, age=2, father=Users(name=xiaou, age=18, father=null))
+user3 ->Users(name=xiaoy, age=4, father=Users(name=xiaou, age=18, father=null))
+```
+
+2. 不使用 @Configuration
+
+```
+user1 被执行了
+user1 被执行了
+user1 被执行了
+user1 ->Users(name=xiaou, age=18, father=null)
+user2 ->Users(name=xiaoz, age=2, father=Users(name=xiaou, age=18, father=null))
+user3 ->Users(name=xiaoy, age=4, father=Users(name=xiaou, age=18, father=null))
+```
+
+使用  @Configuration  : @Bean 修饰的方法都只被调用了一次, 这个很关键,  因为这样就是产生一个实例在 user2 和user3 中使用的都是 user1 的 bean .
+
+在不使用 @Configuration: user1 被执行三次分别在 @Bean 注入容器时候, user2, user3 使用 user1 的时候.
+
+这是为什么？
+
+被 @Configuration 修饰的类，Spring 容器中会通过 CGLIB 给这个类创建一个代理，代理会拦截所有被
+@Bean 修饰的方法，默认情况（bean 为单例）下确保这些方法只被调用一次，从而确保这些 bean 是同
+一个 bean，即单例的。
+
 ### @Import
 
 :::info
