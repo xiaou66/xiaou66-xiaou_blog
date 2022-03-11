@@ -9,6 +9,298 @@ tags:
 ---
 # SpringBoot 注解功能
 
+## 扫描注解
+
+### @ComponentScan
+
+:::info
+
+@ComponentScan 扫描某些包及其子包中所有的类，然后将满足一定条件的类作为 bean 注册到
+Spring 容器容器中。
+
+:::
+
+#### 注解定义
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Documented
+@Repeatable(ComponentScans.class)
+public @interface ComponentScan {
+    // 指定需要扫描的包
+    @AliasFor("basePackages")
+    String[] value() default {};
+    
+    // 指定需要扫描的包
+    @AliasFor("value")
+    String[] basePackages() default {};
+    
+    // 指定一些类, Spring 容器会扫描这些类所在的包及其子包中的类
+    Class<?>[] basePackageClasses() default {};
+    
+    // 自定义 Bean 名称生成器
+    Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
+    
+    // 
+    Class<? extends ScopeMetadataResolver> scopeResolver() default AnnotationScopeMetadataResolver.class;
+    
+    ScopedProxyMode scopedProxy() default ScopedProxyMode.DEFAULT;
+    
+    // 需要扫描包中的那些资源, 默认是：**/*.class，
+    // 即会扫描指定包中所有的 class 文件
+    String resourcePattern() default "**/*.class";
+    
+    // 对扫描的类是否启用默认过滤器，默认为 true
+    boolean useDefaultFilters() default true;
+
+    // 过滤器: 用来配置被扫描出来的那些类会被作为组件注册到容器中
+    ComponentScan.Filter[] includeFilters() default {};
+    
+    // 过滤器, 和 includeFilters 作用刚好相反 
+    // 用来对扫描的类进行排除的, 被排除的类不会被注册到容器中
+    ComponentScan.Filter[] excludeFilters() default {};
+    
+    // 是否延迟初始化被注册的 Bean
+    boolean lazyInit() default false;
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({})
+    public @interface Filter {
+        FilterType type() default FilterType.ANNOTATION;
+
+        @AliasFor("classes")
+        Class<?>[] value() default {};
+
+        @AliasFor("value")
+        Class<?>[] classes() default {};
+
+        String[] pattern() default {};
+    }
+}
+```
+
+#### 工作过程
+
+1. Spring 会扫描指定的包, 并且会递归下面的子包, 获得到一批类的数组.
+2. 然后这些类会经过上面的各种过滤器, 最后剩下的类会被注册到容器中.
+
+所以使用这个注解需要考虑 2 个问题:
+
+1. 需要扫描哪一些包, 可以通过 `value`、`backPackages`、`basePackageClasses` 这三个参数来控制.
+2. 需要使用过滤器吗, 如果需要可以通过 `useDefaultFilters`、`includeFilters`、`excludeFilters` 这三个参数来控制.
+
+这 2 个问题搞清楚了，就可以确定哪些类会被注册到容器中。
+
+默认情况下，任何参数都不设置的情况下，此时，会将 @ComponentScan 修饰的类所在的包作为扫描
+包；**默认情况下 `useDefaultFilters` 为 true，这个为 true 的时候，Spring 容器内部会使用默认过滤器**，
+规则是：凡是类上有 `@Repository`、`@Service`、`@Controller`、`@Component` 这几个注解中的任何一
+个的，那么这个类就会被作为 Bean注册到 Spring 容器中，所以默认情况下，只需在类上加上这几个注解
+中的任何一个，这些类就会自动交给 Spring 容器来管理了。
+
+#### includeFilters 的使用
+
+**Filter 定义**
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target({})
+public @interface Filter {
+    FilterType type() default FilterType.ANNOTATION;
+
+    @AliasFor("classes")
+    Class<?>[] value() default {};
+
+    @AliasFor("value")
+    Class<?>[] classes() default {};
+
+    String[] pattern() default {};
+}
+```
+
+**FilterType 主要有**
+
+1. ANNOTATION：通过注解的方式来筛选候选者，即判断候选者是否有指定的注解
+   - 通过 classes 参数可以指定一些注解，用来判断被扫描的类上是否有 classes 参数指定的注解
+2. ASSIGNABLE_TYPE：通过指定的类型来筛选候选者，即判断候选者是否是指定的类型
+   - 通过 classes 参数可以指定一些类型，用来判断被扫描的类是否是 classes 参数指定的类型
+3. ASPECTJ：ASPECTJ 表达式方式，即判断候选者是否匹配 ASPECTJ 表达式
+4. REGEX：正则表达式方式，即判断候选者的完整名称是否和正则表达式匹配
+5. CUSTOM：用户自定义过滤器来筛选候选者，对候选者的筛选交给用户自己来判断
+   - 表示这个过滤器是用户自定义的，classes 参数就是用来指定用户自定义的过滤器，自定义的过滤器需要实现 `org.springframework.core.type.filter.TypeFilter` 接口
+
+#### 实验
+
+1. 包含指定类型的类
+
+```java
+public interface IController { }
+public class Controller1 implements IController{ }
+public class Controller2 implements IController{ }
+```
+
+```java
+@ComponentScan(
+    useDefaultFilters = false,
+    includeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = IController.class)
+    }
+)
+public class ScanBean1 {}
+```
+
+```java 测试类
+@Test void ScanBeanTest1() {
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanBean1.class);
+    for (String beanName : context.getBeanDefinitionNames()) {
+        System.out.println(beanName + "->" + context.getBean(beanName));
+    }
+}
+```
+
+运行输出
+
+ ```
+ controller1->com.example.springdemo.controller.Controller1@350a94ce
+ controller2->com.example.springdemo.controller.Controller2@7e00ed0f
+ ```
+
+#### 自定义 Filter
+
+自定义 Filter 的步骤为: 
+
+1. 设置 @Filter 中 type 的类型为：FilterType.CUSTOM
+2. 自定义过滤器类, 需要实现接口 `org.springframework.core.type.filter.TypeFilter`
+3. 设置 @Filter 中的 classses 为自定义的过滤器类型
+
+TypeFilter 接口的定义：
+
+```java TypeFilter.class
+@FunctionalInterface
+public interface TypeFilter {
+    boolean match(MetadataReader metadataReader,
+                  MetadataReaderFactory metadataReaderFactory) throws IOException;
+}
+```
+
+**MetadataReader 接口**
+
+```java MetadataReader.class
+public interface MetadataReader {
+    /**
+     * 返回类文件的资源引用
+     */
+    Resource getResource();
+    /**
+     * 返回一个 ClassMetadata 对象，可以通过这个读想获取类的一些元数据信息，如类的 class 对象、
+     * 是否是接口、是否有注解、是否是抽象类、父类名称、接口名称、内部包含的之类列表等等，可以去看一下源
+     * 码
+     */
+    ClassMetadata getClassMetadata();
+    /**
+     * 获取类上所有的注解信息
+     */
+    AnnotationMetadata getAnnotationMetadata();
+}
+```
+
+**MetadataReaderFactory 接口**
+
+ 类元数据读取器工厂，可以通过这个类获取任意一个类的 MetadataReader 对象。
+
+```java
+public interface MetadataReaderFactory {
+    /**
+	 * 返回指定资源的 MetadataReader 对象
+	 */
+    MetadataReader getMetadataReader(String className) throws IOException;
+    /**
+	 * 返回指定资源的 MetadataReader 对象
+	 */
+    MetadataReader getMetadataReader(Resource resource) throws IOException;
+}
+```
+
+了解完定义 Filter 接下来动手实践了.
+
+```java 自定义 Filter
+public class MyFilter implements TypeFilter {
+    @Override
+    public boolean match(MetadataReader metadataReader,
+                         MetadataReaderFactory metadataReaderFactory) throws IOException {
+        Class<?> curClass = null;
+        try {
+            curClass = Class.forName(
+                metadataReader.getClassMetadata().getClassName()
+            );
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return curClass != null && IController.class.isAssignableFrom(curClass);
+    }
+}
+```
+
+```java 测试方法
+@Test
+void ScanBeanTest2() {
+    AnnotationConfigApplicationContext context =
+        new AnnotationConfigApplicationContext(ScanBean2.class);
+    for (String beanName : context.getBeanDefinitionNames()) {
+        System.out.println(beanName + "->" + context.getBean(beanName));
+    }
+}
+```
+
+**输出**
+
+```
+controller1->com.example.springdemo.controller.Controller1@1b11171f
+controller2->com.example.springdemo.controller.Controller2@1151e434
+```
+
+#### 注解重复使用
+
+第一种写法
+
+```java
+@ComponentScan(basePackageClasses = ScanClass.class)
+@ComponentScan(
+    useDefaultFilters = false, //不启用默认过滤器
+    includeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes
+                              = IService.class)
+    })
+public class ScanBean3 {}
+```
+
+第二种写法
+
+```java
+@ComponentScans({
+    @ComponentScan(basePackageClasses = ScanClass.class),
+    @ComponentScan(
+        useDefaultFilters = false, // 不启用默认过滤器
+        includeFilters = {
+            @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                                  classes = IService.class)
+        })})
+public class ScanBean4 {}
+```
+
+
+
+#### 总结
+
+1. @ComponentScan 用于批量注册  Bean，Spring 会按照这个注解的配置，递归扫描指定包中的所 有类，将满足条件的类批量注册到 spring 容器中
+2. 可以通过`value`、`basePackages`、`basePackageClasses` 这几个参数来配置包的扫描范围 
+3. 可以使用 `useDefaultFilters`、`includeFilters`、`excludeFilters` 这三个参数来配置过滤器,被过滤器处理之后剩下的类会被注册到容器中.
+4. 指定包名的方式配置扫描范围存在隐患，包名被重命名之后，会导致扫描实现，所以一般我们在需
+   要扫描的包中可以创建一个标记的接口或者类，作为 `basePackageClasses` 的值，通过这个来控制
+   包的扫描范围
+5.  指定包名的方式配置扫描范围存在隐患，包名被重命名之后，会导致扫描实现，所以一般我们在需 要扫描的包中可以创建一个标记的接口或者类，作为 `basePackageClasses` 的值，通过这个来控制包的扫描范围
+6. @CompontScan 注解会被 `ConfigurationClassPostProcessor` 类递归处理，最终得到所有需要注册的类。
+
 ## 配置注解
 
 ### @Configuration
@@ -76,7 +368,7 @@ String destroyMethod() default "(inferred)";
 4. session 每次HTTP请求都会产生新的Bean，该Bean在仅在当前session内有效
 5. global session 每次HTTP请求都会产生新的Bean，该Bean在 当前global Session（基于portlet的web应用中）内有效
 
-### @Configuration 和 @Bean 使用
+### @Configuration 和 @Bean 特点
 
 :::info
 
