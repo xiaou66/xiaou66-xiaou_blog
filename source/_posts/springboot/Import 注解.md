@@ -1,5 +1,5 @@
 ---
-title: @Import 注解
+title: Import 注解
 date: 2022/03/12 17:43:09
 math: true
 categories:
@@ -7,7 +7,7 @@ categories:
 tags:
   - [java]
 ---
-# @Import 注解
+# Import 注解
 
 :::info
 
