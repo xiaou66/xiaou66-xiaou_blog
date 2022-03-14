@@ -234,6 +234,93 @@ user3 ->Users(name=xiaoy, age=4, father=Users(name=xiaou, age=18, father=null))
 public class Person {}
 ```
 
+### @Lazy
+
+> 实现 bean 的延迟初始化
+>
+> - 延迟初始化：就是使用到的时候才会去进行初始化。
+
+#### 注解定义
+
+```java
+@Target({ElementType.TYPE, ElementType.METHOD,
+         ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Lazy {
+    /**
+	 * 是否应该发生延迟初始化。
+	 */
+    boolean value() default true;
+
+}
+```
+
+#### 实验
+
+```java 配置类
+@Lazy
+@Configuration
+public class ConfigDemo {
+    @Bean
+    public String name() {
+        System.out.println("create bean >> name");
+        return "xiaou";
+    }
+    public String value() {
+        System.out.println("create bean >> value");
+        return "xiaoy";
+    }
+}
+```
+
+```java 在类上使用 Lazy
+@Component
+@Lazy
+public class LazyController {
+    public LazyController() {
+        System.out.println("create->LazyController");
+    }
+}
+```
+
+```java
+@ComponentScan("com.example.springdemo.LazyDemo")
+public class LazyBean {}
+```
+
+```java 测试方法
+@Test
+void importTest3() {
+    System.out.println("准备启动 Spring 容器");
+    AnnotationConfigApplicationContext context =
+        new AnnotationConfigApplicationContext(LazyBean.class);
+    System.out.println("启动 Spring 容器完成");
+    for (String beanName : context.getBeanDefinitionNames()) {
+        System.out.println(beanName + "->" + context.getBean(beanName));
+    }
+}
+```
+
+**输出结果**
+
+```
+准备启动 Spring 容器
+启动 Spring 容器完成
+create->LazyController
+lazyController->com.example.springdemo.LazyDemo.LazyController@359df09a
+create bean >> name
+name->xiaou
+```
+
+#### 总结
+
+@ Lazy 可以让 bean 延迟初始化常见用法
+
+1. 标注在类上
+2. 注在配置类上，会对配置类中所有的 @Bean 标注的方法有效
+3. @Bean 一起标注在方法上
+
 ### @ImportResource
 
 :::info

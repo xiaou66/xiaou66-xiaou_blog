@@ -54,3 +54,18 @@ reward:
 
 # 图片服务
 # image_server: "https://api.ghser.com/random/api.php"
+# vendors: 
+#   css:
+#     katex: https://cdn.bootcdn.net/ajax/libs/KaTeX/0.12.0/katex.min.css
+#     fancybox: https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.csshttps://cdn.bootcdn.net/ajax/libs/justifiedGallery/3.8.1/css/justifiedGallery.min.css
+#   js:
+#     pace: https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js
+#     pjax: https://cdn.bootcdn.net/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.min.js
+#     copy_tex: https://cdn.bootcdn.net/ajax/libs/KaTeX/0.12.0/contrib/copy-tex.min.js
+#     anime: https://cdn.bootcdn.net/ajax/libs/animejs/3.2.0/anime.min.js
+#     algolia: https://cdn.bootcdn.net/ajax/libs/algoliasearch/4.12.2/algoliasearch-lite.umd.js
+#     instantsearch: https://cdn.bootcdn.net/ajax/libs/instantsearch.js/4.39.1/instantsearch.production.min.js
+#     quicklink: https://cdn.bootcdn.net/ajax/libs/quicklink/2.2.0/quicklink.umd.min.js
+#     chart: https://cdn.bootcdn.net/ajax/libs/frappe-charts/1.5.8/frappe-charts.min.iife.min.js
+#     fetch: https://cdn.bootcdn.net/ajax/libs/isomorphic-fetch/3.0.0/fetch-npm-browserify.min.js
+#     fancybox: https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js,https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js,https://cdn.bootcdn.net/ajax/libs/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js
