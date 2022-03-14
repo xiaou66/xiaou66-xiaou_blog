@@ -9,8 +9,6 @@ tags:
 ---
 # ComponentScan 注解
 
-### @ComponentScan
-
 :::info
 
 @ComponentScan 扫描某些包及其子包中所有的类，然后将满足一定条件的类作为 bean 注册到
@@ -18,7 +16,7 @@ Spring 容器容器中。
 
 :::
 
-#### 注解定义
+## 注解定义
 
 ```java
 @Retention(RetentionPolicy.RUNTIME)
@@ -78,7 +76,7 @@ public @interface ComponentScan {
 }
 ```
 
-#### 工作过程
+## 工作过程
 
 1. Spring 会扫描指定的包, 并且会递归下面的子包, 获得到一批类的数组.
 2. 然后这些类会经过上面的各种过滤器, 最后剩下的类会被注册到容器中.
@@ -96,7 +94,7 @@ public @interface ComponentScan {
 个的，那么这个类就会被作为 Bean注册到 Spring 容器中，所以默认情况下，只需在类上加上这几个注解
 中的任何一个，这些类就会自动交给 Spring 容器来管理了。
 
-#### includeFilters 的使用
+## includeFilters 的使用
 
 **Filter 定义**
 
@@ -127,9 +125,9 @@ public @interface Filter {
 5. CUSTOM：用户自定义过滤器来筛选候选者，对候选者的筛选交给用户自己来判断
    - 表示这个过滤器是用户自定义的，classes 参数就是用来指定用户自定义的过滤器，自定义的过滤器需要实现 `org.springframework.core.type.filter.TypeFilter` 接口
 
-#### 实验
+## 实验
 
-1. 包含指定类型的类
+### 包含指定类型的类
 
 ```java
 public interface IController { }
@@ -163,7 +161,7 @@ controller1->com.example.springdemo.controller.Controller1@350a94ce
 controller2->com.example.springdemo.controller.Controller2@7e00ed0f
  ```
 
-#### 自定义 Filter
+### 自定义 Filter
 
 自定义 Filter 的步骤为: 
 
@@ -257,7 +255,7 @@ controller1->com.example.springdemo.controller.Controller1@1b11171f
 controller2->com.example.springdemo.controller.Controller2@1151e434
 ```
 
-#### 注解重复使用
+### 注解重复使用
 
 第一种写法
 
@@ -286,7 +284,7 @@ public class ScanBean3 {}
 public class ScanBean4 {}
 ```
 
-#### 源码部分
+### 源码部分
 
 核心方法 `org.springframework.context.annotation.ConfigurationClassPostProcessor#processConfigBeanDefinitions`
 
@@ -423,7 +421,7 @@ public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
 }
 ```
 
-#### 总结
+### 总结
 
 1. @ComponentScan 用于批量注册  Bean，Spring 会按照这个注解的配置，递归扫描指定包中的所 有类，将满足条件的类批量注册到 spring 容器中
 2. 可以通过`value`、`basePackages`、`basePackageClasses` 这几个参数来配置包的扫描范围 
