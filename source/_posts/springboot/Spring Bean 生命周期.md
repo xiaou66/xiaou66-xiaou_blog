@@ -53,8 +53,8 @@ Spring Bean 生命周期主要有 13 个阶段。
 7. 如果 Bean 实现了 InitializingBean 接口，则 Spring 将调用 afterPropertiesSet() 方法。
 8. 如果在配置文件中通过 init-method 属性指定了初始化方法，则调用该初始化方法。
 9. 如果 BeanPostProcessor 和 Bean 关联，则 Spring 将调用该接口的初始化方法 postProcessAfterInitialization()。此时，Bean 已经可以被应用系统使用了。
-10. 如果在 `<bean>` 中指定了该 Bean 的作用域为 singleton，则将该 Bean 放入 Spring IoC 的缓存池中，触发 Spring 对该 Bean 的生命周期管理；如果在 `<bean>` 中指定了该 Bean 的作用域为 prototype，则将该 Bean 交给调用者，调用者管理该 Bean 的生命周期，Spring 不再管理该 Bean。
-11. 如果 Bean 实现了 DisposableBean 接口，则 Spring 会调用 destory() 方法销毁 Bean；如果在配置文件中通过 destory-method 属性指定了 Bean 的销毁方法，则 Spring 将调用该方法对 Bean 进行销毁。
+10. 如果在 `<bean>` 中指定了该 Bean 的作用域为 singleton，则将该 Bean 放入 Spring IOC 的缓存池中，触发 Spring 对该 Bean 的生命周期管理；如果在 `<bean>` 中指定了该 Bean 的作用域为 prototype，则将该 Bean 交给调用者，调用者管理该 Bean 的生命周期，Spring 不再管理该 Bean。
+11. 如果 Bean 实现了 DisposableBean 接口，则 Spring 会调用 destory() 方法销毁 Bean；如果在配置文件中通过 `destory-method` 属性指定了 Bean 的销毁方法，则 Spring 将调用该方法对 Bean 进行销毁。
 
 ## Bean 元信息配置阶段
 
@@ -367,13 +367,11 @@ public class BuildBeanTest {
 
 ```
 Root bean: class [com.example.springdemo.bean.Users]; 
-scope=; abstract=false; lazyInit=null; 
-autowireMode=0; dependencyCheck=0; autowireCandidate=true; 
-primary=false; factoryBeanName=null; 
-factoryMethodName=null; initMethodName=null; destroyMethodName=null
+	scope=; abstract=false; lazyInit=null; 
+	autowireMode=0; dependencyCheck=0; autowireCandidate=true; 
+	primary=false; factoryBeanName=null; 
+	factoryMethodName=null; initMethodName=null; destroyMethodName=null
 ```
-
-
 
 #### 组装一个有属性的 Bean
 
@@ -399,7 +397,11 @@ void buildBeanTest2() {
 **输出**
 
 ```
-Root bean: class [com.example.springdemo.bean.Users]; scope=; abstract=false; lazyInit=null; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null
+Root bean: class [com.example.springdemo.bean.Users];
+	scope=; abstract=false; lazyInit=null; autowireMode=0;
+	dependencyCheck=0; autowireCandidate=true; primary=false;
+	factoryBeanName=null; factoryMethodName=null;
+	initMethodName=null; destroyMethodName=null
 Users{name='xiaou'}
 ```
 
@@ -1540,6 +1542,6 @@ DisposableBean 接口中的 destroy() 方法
 2. DisposableBean 接口中的 Destroy()
 3. 自定义的销毁方法
 
-Bean 生命周期完整流程图
+## Bean 生命周期流程图
 
 ![Bean生命周期流程图](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1647397416697Bean生命周期流程图.png)
