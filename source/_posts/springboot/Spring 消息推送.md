@@ -90,6 +90,8 @@ public class SSEController {
         sseEmitterMap.put(clientId, 
                           new Result(clientId, System.currentTimeMillis(), sseEmitter));
         clearSseEmitterConnect();
+        // 设置响应头的字符集, 如果设置中文将乱码
+        response.setCharacterEncoding("UTF-8");
         return sseEmitter;
     }
     @RequestMapping("/send")
