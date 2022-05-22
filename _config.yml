@@ -63,6 +63,7 @@ category_map: # edit for Theme.shoka
   java: java
   javaFrame: java 框架
   mysql: MySql
+  优化: optimize
 tag_map:
   js: js
   Java: java
