@@ -11,14 +11,14 @@ tags:
 
 ##  内存结构概述
 
-![image-20220112123403456](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646538232141image-20220112123403456.png)
+![image-20220112123403456](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646538232141image-20220112123403456.png)
 
 
 ## JVM的位置
 
  JVM 介于**操作系统**和**字节码文件**的中间。
 
- ![image-20220111203102222](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646538236132image-20220111203102222.png)
+ ![image-20220111203102222](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646538236132image-20220111203102222.png)
 
 ## JVM的整体结构
 
@@ -26,11 +26,11 @@ tags:
 2. 采用解释器与即时编译器并存的架构
 3. 执行引擎包含三部分：**解释器**，**即时编译器**，**垃圾回收器**
 
- ![image-20220111204826164](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646538240139image-20220111204826164.png)
+ ![image-20220111204826164](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646538240139image-20220111204826164.png)
 
 ## Java代码执行流程
 
-![image-20220111205949349](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646538244133image-20220111205949349.png)
+![image-20220111205949349](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646538244133image-20220111205949349.png)
 
 ## JVM架构模型
 

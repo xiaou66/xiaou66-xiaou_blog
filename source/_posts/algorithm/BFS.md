@@ -175,7 +175,7 @@ public List<List<Integer>> levelOrder(TreeNode root) {
 
 ![](https://assets.leetcode-cn.com/solution-static/127/2.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1613975776786-1613975776779.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1613975776786-1613975776779.png)
 
 #### 代码
 

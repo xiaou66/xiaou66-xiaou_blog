@@ -26,9 +26,9 @@ AVL树是最早发明的自平衡二叉搜索树之一
 
 ### 对比
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627953711508-1627953711502-tree_10.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627953711508-1627953711502-tree_10.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627956495720-1627956495718-tree_09.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627956495720-1627956495718-tree_09.png)
 
 ## 元素添加操作
 ### 添加会导致失衡
@@ -36,7 +36,7 @@ AVL树是最早发明的自平衡二叉搜索树之一
 1. 可能会导致所有祖先节点都失衡
 2. 父节点、非祖先节点，都不可能失衡
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627960321158-1627960321157-tree_11.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627960321158-1627960321157-tree_11.png)
 
 ### 主要情况
 
@@ -59,11 +59,11 @@ AVL树是最早发明的自平衡二叉搜索树之一
 
 
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627960348482-1627960348481-tree_12.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627960348482-1627960348481-tree_12.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627960306878-1627960306877-tree_13.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627960306878-1627960306877-tree_13.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627960453571-1627960453570-tree_14.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627960453571-1627960453570-tree_14.png)
 
 ```java 右旋转实现
 protected void rotateRight(Node<E> grand) {
@@ -110,11 +110,11 @@ protected void rotateRight(Node<E> grand) {
 
 :::
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627964462985-1627964462983-tree_15.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627964462985-1627964462983-tree_15.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627962779509-1627962779508-tree_16.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627962779509-1627962779508-tree_16.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627964512661-1627964512660-tree_17.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627964512661-1627964512660-tree_17.png)
 
 ```java 左旋转实现
 protected void rotateLeft(Node<E> grand) {
@@ -150,24 +150,24 @@ protected void rotateLeft(Node<E> grand) {
 1. 先对父结点进行左旋转
 2. 再对祖父结点进行右旋转
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627965230989-1627965230988-tree_18.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627965230989-1627965230988-tree_18.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627965316387-1627965316386-tree_19.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627965316387-1627965316386-tree_19.png)
 
 
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627965417413-1627965417412-tree_20.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627965417413-1627965417412-tree_20.png)
 
 ### 右左旋转 RL(双旋)
 
 1. 先对父结点进行右旋转
 2. 再对祖父结点进行左旋转
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627965587654-1627965587653-tree_21.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627965587654-1627965587653-tree_21.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627965620244-1627965620243-tree_23.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627965620244-1627965620243-tree_23.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627965602394-1627965602392-tree_22.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627965602394-1627965602392-tree_22.png)
 
 ### 代码
 
@@ -241,11 +241,11 @@ private void reBalance(Node<E> grand) {
 1. 旋转操作与增加一致
 2. 绿色结点如果存在则子树高度不变不会失衡,如果绿色结点不存在则会造成子树的高度改变可能会使子树的父结点或者祖先结点失衡
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627974448681-1627974448678-tree_24.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627974448681-1627974448678-tree_24.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627974496184-1627974496182-tree_26.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627974496184-1627974496182-tree_26.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627974473734-1627974473733-tree_25.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627974473734-1627974473733-tree_25.png)
 
 
 

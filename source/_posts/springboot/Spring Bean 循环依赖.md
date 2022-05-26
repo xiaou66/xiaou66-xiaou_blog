@@ -17,7 +17,7 @@ A 依赖于 B、B 依赖于 C、C 依赖于 A。
 
 **图示例**
 
- ![image-20220318091134489](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1647595130747image-20220318091134489.png)
+ ![image-20220318091134489](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1647595130747image-20220318091134489.png)
 
 **代码示例**
 

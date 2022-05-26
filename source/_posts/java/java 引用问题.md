@@ -20,7 +20,7 @@ tags:
 3. 弱引用（WeakReference）：被弱引用关联的对象只能生存到下一次垃圾收集之前。当垃圾收集器工作时，无论内存空间是否足够，都会回收掉被弱引用关联的对象。
 4. 虚引用（PhantomReference）：一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来获得一个对象的实例。为一个对象设置虚引用关联的唯一目的就是能在这个对象被收集器回收时收到一个系统通知。
 
- ![image-20220208210334547](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644325456146image-20220208210334547.png)
+ ![image-20220208210334547](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1644325456146image-20220208210334547.png)
 
 ## 强引用
 

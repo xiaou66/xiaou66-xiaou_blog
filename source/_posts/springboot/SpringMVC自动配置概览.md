@@ -143,11 +143,11 @@ private static class HttpMethodRequestWrapper extends HttpServletRequestWrapper 
 
  1. 先找到 `org.springframework.web.servlet.DispatcherServlet` 这个类负责将请求分发，所有的请求都会通过这个类
 
-![image-20211227205953694](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640616275507image-20211227205953694.png)
+![image-20211227205953694](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1640616275507image-20211227205953694.png)
 
 从观察类图可以发现 DispatcherServlet 实质也是一个 HttpServlet。在它的类中有 FrameworkServlet 中含有 各种请求的处理方法。
 
- ![image-20211227210123506](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640616283558image-20211227210123506.png)
+ ![image-20211227210123506](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1640616283558image-20211227210123506.png)
 
 观察其源码都调用了 `processRequest(HttpServletRequest request, HttpServletResponse response)` 
 
@@ -208,7 +208,7 @@ protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Ex
 }
 ```
 
- ![image-20211227215500548](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640616287252image-20211227215500548.png)
+ ![image-20211227215500548](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1640616287252image-20211227215500548.png)
 
 RequestMappingHandlerMapping 这个类处理 RequestMapping.class 这个注解这个也可以在它的方法 `isHandler(Class<?> beanType)` 方法中可以看出
 
@@ -224,7 +224,7 @@ protected boolean isHandler(Class<?> beanType) {
 
  这个是本次扫描到 url 对象处理方法
 
- ![image-20211227215824150](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640616291083image-20211227215824150.png)
+ ![image-20211227215824150](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1640616291083image-20211227215824150.png)
 
 对上面的「getHandler」方法逐步查找 找到了 `lookupHandlerMethod(String lookupPath, HttpServletRequest request)` 方法这个方法是查找当前请求的最佳匹配处理程序。
 
@@ -333,7 +333,7 @@ public class MyRoutes {
 
 > 默认的欢迎页面处理的 handler
 
-![image-20211227223533358](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640616295785image-20211227223533358.png)
+![image-20211227223533358](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1640616295785image-20211227223533358.png)
 
 ## 请求参数映射解析
 
@@ -356,7 +356,7 @@ WebRequest、ServletRequest、MultipartRequest、 HttpSession、javax.servlet.ht
 HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 ```
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640868221671image-20211229153857567.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1640868221671image-20211229153857567.png)
 
 0. 支持方法上标注@RequestMapping 
 1. 函数式 RouterFunctionMapping 的
@@ -374,7 +374,7 @@ mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
 ```
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1640868199071image-20211229155023045.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1640868199071image-20211229155023045.png)
 
 获取参数的实际方法
 
@@ -494,7 +494,7 @@ this.returnValueHandlers.handleReturnValue(
 					returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
 ```
 ### 所有的返回值解析器
- ![image-20220108105800946](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644745912620image-20220108105800946.png)
+ ![image-20220108105800946](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1644745912620image-20220108105800946.png)
 
 ### 查找返回值处理器
 
@@ -755,11 +755,11 @@ protected <T> void writeWithMessageConverters(@Nullable T value, MethodParameter
 
 ### HttpMessageConverter
 
- ![image-20220113205448939](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644745972141image-20220113205448939.png)
+ ![image-20220113205448939](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1644745972141image-20220113205448939.png)
 
 #### **默认消息转换器**
 
- ![image-20220108140902237](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644745975199image-20220108140902237.png)
+ ![image-20220108140902237](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1644745975199image-20220108140902237.png)
 
 0. 只支持Byte类型的
 1. String
@@ -836,7 +836,7 @@ public List<MediaType> resolveMediaTypes(NativeWebRequest request) throws HttpMe
 
  **协商策略**
 
- ![image-20220113214247788](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1644745980140image-20220113214247788.png)
+ ![image-20220113214247788](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1644745980140image-20220113214247788.png)
 
 0. 开启请求参数内容协商策略才会有
 1. 请求头协商默认

@@ -43,7 +43,7 @@ tags:
 
 1. 在下列的二叉树搜索树总插入值为 `12` 的结点 
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627905868990-1627905868986-tree_03.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627905868990-1627905868986-tree_03.png)
 
 #### 代码
 
@@ -127,17 +127,17 @@ public void add(E element) {
 
 1. 删除叶子结点直接删除
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627907535316-1627907535313-tree_04.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627907535316-1627907535313-tree_04.png)
 
 1. 删除度为 1 的结点——用子结点替代原结点的位置
 
-   ![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627907545669-1627907545665-tree_05.png)
+   ![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627907545669-1627907545665-tree_05.png)
 
 2. 删除结点——度为 2 的结点
 
    - 绿色为前驱结点
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627910787604-1627910787602-tree_08.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627910787604-1627910787602-tree_08.png)
 #### 代码
 ```java
 private void remove(Node<E> node) {

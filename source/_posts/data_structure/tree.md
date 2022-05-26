@@ -139,7 +139,7 @@ $$
 5. 如果 2i + 1 ≤ n ，它的右子节点编号为 2i + 1
 6. 如果 2i + 1 > n ，它无右子节点
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627895955704-1627895955698-tree_01.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627895955704-1627895955698-tree_01.png)
 
 ##### 从 0 开始标号
 
@@ -152,7 +152,7 @@ $$
 5. 如果 2i + 2 ≤ n – 1 ，它的右子节点编号为 2i + 2
 6. 如果 2i + 2 > n – 1 ，它无右子节点
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627896124778-1627896124773-tree_02.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627896124778-1627896124773-tree_02.png)
 
 ## 二叉树结点类型判断
 
@@ -212,12 +212,12 @@ public Node<E> sibling() {
 
 1. `node.left != null` 代表前驱结点在左子树中最右边的
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627910049292-1627910049291-tree_06.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627910049292-1627910049291-tree_06.png)
 
 1. `node.left == null && node.parent != null` 
    - 到父结点中找直到发现结点是父结点右子树为止
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1627910007276-1627910007275-tree_07.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1627910007276-1627910007275-tree_07.png)
 
 ```java
 private Node<E> precursor(Node<E> node) {

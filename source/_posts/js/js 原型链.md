@@ -63,7 +63,7 @@ console.log(p1.info === p2.info);
 
 null 对象是JavaScript 一切的起源, 但是 null 但是 null 代表着无这么产生对象丫，使用 无(null)中生有术() 创建一个 No.1 的对象继承于 null (null 对象生出了 No.1)。但是 null 不想再生了时候 null 对象把自己孩子的基因给基因工厂 (Object ) 让 Object 生成新的对象。
 
-![image-20211201205121435](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638363083963image-20211201205121435.png)
+![image-20211201205121435](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638363083963image-20211201205121435.png)
 
 而基因工厂(Object)为了更好的创造不同类型对象将创建对象的机器分成了
 
@@ -85,7 +85,7 @@ null 对象是JavaScript 一切的起源, 但是 null 但是 null 代表着无�
 
 这时结构发生改变
 
-![image-20211201211347446](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638364428847image-20211201211347446.png)
+![image-20211201211347446](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638364428847image-20211201211347446.png)
 
 基因工厂分类的机器也需要各自有一个模板对象这时需要到 No.1 基于基因
 
@@ -269,7 +269,7 @@ let s1 = new Student('xiaou', 20);
 
 :::
 
-![image-20211202194342509](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638445425535image-20211202194342509.png)
+![image-20211202194342509](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638445425535image-20211202194342509.png)
 
 这种函数有很多缺点
 
@@ -323,7 +323,7 @@ function Student(name) {
 const a = new Student("xiaou");
 ```
 
- ![image-20211206211613848](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638796586358image-20211206211613848.png)
+ ![image-20211206211613848](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638796586358image-20211206211613848.png)
 
 通过上面截图很明显发现这种继承的缺点
 
@@ -361,7 +361,7 @@ Student.prototype.constructor = Student;
 const a = new Student("xiaou");
 ```
 
- ![image-20211206213056969](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638797459221image-20211206213056969.png)
+ ![image-20211206213056969](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638797459221image-20211206213056969.png)
 
 通过上面截图很明显发现这种继承的缺点
 
@@ -396,7 +396,7 @@ console.log(stu1);
 console.log(stu2);
 ```
 
- ![image-20211207102745852](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638855248696image-20211207102745852.png)
+ ![image-20211207102745852](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638855248696image-20211207102745852.png)
 
 ```javascript
 // 构造方法实现
@@ -448,7 +448,7 @@ a.sayHi(); //"hi"
 console.log(a);
 ```
 
- ![image-20211207125024003](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638855245137image-20211207125024003.png)
+ ![image-20211207125024003](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638855245137image-20211207125024003.png)
 
 这种继承方式缺点也名明显
 
@@ -501,7 +501,7 @@ console.log(stu1);
 console.log(stu2);
 ```
 
- ![image-20211207132720721](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638855241911image-20211207132720721.png)
+ ![image-20211207132720721](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638855241911image-20211207132720721.png)
 
 这个例子的高效率体现在它只调用了一次`SuperType` 构造函数，并且因此避免了在`SubType.prototype` 上创建不必要的、多余的属性。于此同时，原型链还能保持不变；因此，还能够正常使用`instanceof` 和`isPrototypeOf()`
 
@@ -523,7 +523,7 @@ const a = new Student('张三');
 console.log(a);
 ```
 
- ![image-20211207135131769](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638856296493image-20211207135131769.png)
+ ![image-20211207135131769](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638856296493image-20211207135131769.png)
 
 这是方式可以实现“多继承”
 
@@ -560,9 +560,9 @@ console.log(child1 instanceof Parent)
 console.log(child1 instanceof OtherParent)
 ```
 
-  ![image-20211207142810403](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646536699144image-20211207142810403.png)
+  ![image-20211207142810403](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646536699144image-20211207142810403.png)
 
- ![image-20211207142747192](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1638858468844image-20211207142747192.png)
+ ![image-20211207142747192](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1638858468844image-20211207142747192.png)
 
 这是方法缺点也明显
 

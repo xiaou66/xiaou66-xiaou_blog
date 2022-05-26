@@ -23,9 +23,9 @@ B树(balanced Tree)是一种平衡的多路搜索树，多用于文件系统、�
 3. 平衡，每个节点的所有子树高度一致
 4. B树中的阶指的是一个结点最多拥有的结点个数
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628038764964-tree_28.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628038764964-tree_28.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628038751225-tree_27.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628038751225-tree_27.png)
 
 ## M 阶B树的性质
 
@@ -59,7 +59,7 @@ m 阶B树，最多需要 $\log_{2}{m\\}$ 代合并
 
 :::
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628043074010-tree_29.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628043074010-tree_29.png)
 
 ## 搜索
 
@@ -73,7 +73,7 @@ m 阶B树，最多需要 $\log_{2}{m\\}$ 代合并
 2. 如果命中，搜索结束
 3. 如果未命中，再去对应的子节点中搜索元素，重复步骤 1
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628044078470-tree_30.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628044078470-tree_30.png)
 
 ## 添加
 
@@ -82,7 +82,7 @@ m 阶B树，最多需要 $\log_{2}{m\\}$ 代合并
 1. 正常插入
    - 插入 「95」
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628051284735-tree_31.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628051284735-tree_31.png)
 
 2. 当插入时叶子结点的元素个数超过限制时需要进行「上溢」操作
 
@@ -98,13 +98,13 @@ m 阶B树，最多需要 $\log_{2}{m\\}$ 代合并
 
    :::
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628052522553-tree_32.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628052522553-tree_32.png)
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628052555357-tree_34.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628052555357-tree_34.png)
 
 
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628052539506-tree_33.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628052539506-tree_33.png)
 
 
 
@@ -139,7 +139,7 @@ m 阶B树，最多需要 $\log_{2}{m\\}$ 代合并
     1. 将父节点的元素 b 插入到下溢节点的 0 位置（最小位置）
     2. 用兄弟节点的元素 a（最大的元素）替代父节点的元素 b
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628062052845-tree_35.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628062052845-tree_35.png)
 
 - 如果下溢节点临近的兄弟节点，只有 $\left \lceil m/2 \right \rceil - 1$ 个元素
 
@@ -147,7 +147,7 @@ m 阶B树，最多需要 $\log_{2}{m\\}$ 代合并
     2. 合并后的节点元素个数等于$\left \lceil m/2 \right \rceil + \left \lceil m/2 \right \rceil - 2 \le m − 1$
     3. 这个操作可能会导致父节点下溢，依然按照上述方法解决，下溢现象可能会一直往上传播
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1628062073390-tree_36.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1628062073390-tree_36.png)
 
 ## 4 阶 B 树的性质
 

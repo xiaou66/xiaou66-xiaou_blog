@@ -80,7 +80,7 @@ protected AutoConfigurationEntry getAutoConfigurationEntry(AnnotationMetadata an
     spring-boot-autoconfigure-2.5.4.jar包里面也有META-INF/spring.factories
 ```
 
-![](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1631628605247-1631628605245.png)
+![](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1631628605247-1631628605245.png)
 
 ```java
 # Auto Configure

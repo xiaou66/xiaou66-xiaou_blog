@@ -15,7 +15,7 @@ tags:
 
 Mybatis的功能架构分为三层：
 
-![image-20211210210241172](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712808315image-20211210210241172.png)
+![image-20211210210241172](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646712808315image-20211210210241172.png)
 
 ### 接口层
 
@@ -322,9 +322,9 @@ private <E> List<E> selectList(String statement, Object parameter, RowBounds row
 }
 ```
 
- ![image-20211210224606007](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712819317image-20211210224606007.png)
+ ![image-20211210224606007](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646712819317image-20211210224606007.png)
 
- ![image-20211210224632416](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712824314image-20211210224632416.png)
+ ![image-20211210224632416](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646712824314image-20211210224632416.png)
 
 2. 在 query 方法 BaseExecutor 在 151 行
 
@@ -480,7 +480,7 @@ public void setParameters(PreparedStatement ps) {
 
 这个方法执行后方法的 SQL 中的参数已经确定下来了然后就返回到第「4」步执行SQL并封装结果集返回
 
-![image-20211211122049621](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646712830313image-20211211122049621.png)
+![image-20211211122049621](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646712830313image-20211211122049621.png)
 
 # Mybaits 缓存
 
@@ -488,11 +488,11 @@ public void setParameters(PreparedStatement ps) {
 
 在应用运行过程中，我们有可能在一次数据库会话中，执行多次查询条件完全相同的 SQL，MyBatis 提供了一级缓存的方案优化这部分场景，如果是相同的 SQL 语句，会优先命中一级缓存，避免直接对数据库进行查询，提高性能。
 
-![image-20220308121515113](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646715734799image-20220308121515113.png)
+![image-20220308121515113](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646715734799image-20220308121515113.png)
 
 每个 SqlSession 中持有了 Executor，每个 Executor 中有一个 LocalCache。当用户发起查询时，MyBatis 根据当前执行的语句生成 MappedStatement，在 Local Cache 进行查询，如果缓存命中的话，直接返回结果给用户，如果缓存没有命中的话，查询数据库，结果写入 Local Cache，最后返回结果给用户。
 
-![image-20220308134057361](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646718080830image-20220308134057361.png)
+![image-20220308134057361](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646718080830image-20220308134057361.png)
 
 ### 配置
 
@@ -516,7 +516,7 @@ mybatis:
 
 > 可以发现一级缓存在当前的 session 中有效，两条查询语句实际就执行了一条
 
-![image-20220308135429324](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646719253335image-20220308135429324.png)
+![image-20220308135429324](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646719253335image-20220308135429324.png)
 
 在同一个 session 中 如果对数据发生了修改的操作，一级缓存会失效
 
@@ -554,7 +554,7 @@ public void sessionTest3() {
 
 在 session1 做两次查询在这两次查询的中间 session2  插入一行数据而 session1 的二次读取并没有触发真实的查询而是走了一级缓存，所以出现了脏数据。
 
-![image-20220308141534541](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646720175317image-20220308141534541.png)
+![image-20220308141534541](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646720175317image-20220308141534541.png)
 
 ### 在对数据进行操作后缓存失效
 
@@ -614,7 +614,7 @@ if (configuration.getEnvironment() != null) {
 
 在上文中提到的一级缓存中，其最大的共享范围就是一个 SqlSession 内部，如果多个 SqlSession 之间需要共享缓存，则需要使用到二级缓存。开启二级缓存后，会使用 `CachingExecutor` 装饰 Executor，进入一级缓存的查询流程前，先在 `CachingExecutor` 进行二级缓存的查询，具体的工作流程如下所示。
 
-![image-20220308145354322](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646722448575image-20220308145354322.png)
+![image-20220308145354322](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646722448575image-20220308145354322.png)
 
 > 二级缓存开启后，同一个 namespace 下的所有操作语句，都影响着同一个 Cache，即二级缓存被多个 SqlSession 共享，是一个全局的变量。
 >
@@ -681,7 +681,7 @@ public void cache2Test1() {
 
 我们可以看到，当`sqlsession`没有调用`commit()`方法时，二级缓存并没有起到作用。
 
-![image-20220308153309726](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646725523314image-20220308153309726.png)
+![image-20220308153309726](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646725523314image-20220308153309726.png)
 
 测试二级缓存效果，当提交事务时，`sqlSession1`查询完数据后，`sqlSession2`相同的查询是否会从缓存中获取数据。
 
@@ -701,11 +701,11 @@ public void cache2Test2() {
 }
 ```
 
-![image-20220308154014323](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646725522318image-20220308154014323.png)
+![image-20220308154014323](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646725522318image-20220308154014323.png)
 
 测试`update`操作是否会刷新该`namespace`下的二级缓存。
 
-![image-20220308154506959](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1646725519256image-20220308154506959.png)
+![image-20220308154506959](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1646725519256image-20220308154506959.png)
 
 我们可以看到，在 sqlSession3 更新数据库，并提交事务后，sqlsession2 的 StudentMapper namespace 下的查询走了数据库，没有走 Cache。
 

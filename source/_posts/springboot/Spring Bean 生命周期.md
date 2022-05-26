@@ -1544,4 +1544,4 @@ DisposableBean 接口中的 destroy() 方法
 
 ## Bean 生命周期流程图
 
-![Bean生命周期流程图](https://cdn.jsdelivr.net/gh/xiaou66/picture@master/image/1647397416697Bean生命周期流程图.png)
+![Bean生命周期流程图](https://fastly.jsdelivr.net/gh/xiaou66/picture@master/image/1647397416697Bean生命周期流程图.png)
