@@ -266,3 +266,21 @@ public void test10() {
     s.compare("1", "2");
 }
 ```
+
+### 实际应用
+
+1. 在枚举类中使用 
+
+```java
+enum OrderTransform {
+        ORDER_SN("订单号", "$.orderSn", null),
+        AFTER_SALES_STATUS("订单状态", "$.afterSalesStatus", (csvRow) -> {
+            String status = csvRow.getByName(OrderTransform.AFTER_SALES_STATUS);
+            return status;
+        }),
+        ;
+        private String title;
+        private String jsonPath;
+        private Function<CsvRow, String> getValue;
+}
+```
