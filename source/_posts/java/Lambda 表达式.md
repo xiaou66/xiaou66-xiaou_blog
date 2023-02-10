@@ -1,6 +1,6 @@
 ---
 title: Lambda 表达式
-date: 2021/12/27 10:35:11
+date: 2021/12/27 10:35:10
 math: true
 categories:
   - [java]
